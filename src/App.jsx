@@ -3,7 +3,7 @@ import { Routes,Route } from 'react-router-dom'
 import LoginPage from './pages/LoginRegister/LoginPage'
 import Mainpage from './pages/Mainpage'
 import RegisterPage from './pages/LoginRegister/RegisterPage'
-import TestPage from './pages/ExampleListNote/TestPage'
+import TestPage from './TestPage'
 
 function App() {
 

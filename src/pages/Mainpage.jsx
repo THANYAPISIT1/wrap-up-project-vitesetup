@@ -2,7 +2,7 @@ import Sidebar from "../components/Sidebar";
 import Modal from "../components/Modal";
 import Navbar from "../components/Navbar"
 import Dropdown from "../components/Dropdown";
-import NotesList from "./ExampleListNote/NotesList";
+import NotesList from "./Note/NotesList";
 import NoteModal from "../components/NoteModal";
 import { useState } from "react";
 
