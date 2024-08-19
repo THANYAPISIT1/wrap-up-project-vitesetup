@@ -1,13 +1,18 @@
-import { useState } from 'react';
+import { useState,useRef,useMemo } from 'react';
 import { FaBook } from "react-icons/fa";
 import { BiSolidJoystick } from "react-icons/bi";
 import { IoMdFitness } from "react-icons/io";
 import { FaMoneyBill } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
 import { TiPlus } from "react-icons/ti";
+import JoditEditor from "jodit-react";
+import HTMLReactParser from "html-react-parser";
+
 
 const Modal = () => {
     const [modalOpen, setModalOpen] = useState(false);
+    const editor = useRef(null)
+    const [content, setContent] = useState('')
 
     const modalHandler = (val) => {
         if (val) {
@@ -86,11 +91,17 @@ const Modal = () => {
                         <div className="relative mb-5 mt-2">
                             <div className="absolute right-0 text-gray-600 flex items-center pr-3 h-full cursor-pointer">
                             </div>
-                            <textarea
-                                id="detail"
-                                className="text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-screen flex items-start pl-3 pt-2 text-sm border-gray-300 rounded border"
-                                placeholder="How About today?"
-                            ></textarea>
+                                <JoditEditor
+                                    ref={editor}
+                                    value={content}
+                                    onChange={newContent => setContent(newContent)}
+                                    config={{
+                                        height: 400, // Set the height of the editor
+                                        width: '100%', // Set the width of the editor to 100% of its container
+                                        theme: 'default', // You can also change the theme if needed
+                                    }}
+                                    className="h-[400px] w-full" // Tailwind CSS for additional styling if needed
+                                />
                         </div>
 
                         <div className="flex items-center justify-start w-full">

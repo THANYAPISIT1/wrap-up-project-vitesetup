@@ -43,20 +43,11 @@ const Dropdown = () => {
             isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
           }`}
         >
-          <input
-            id="search-input"
-            className="block w-full px-4 py-2 text-gray-800 border rounded-md border-gray-300 focus:outline-none"
-            type="text"
-            placeholder="Search items"
-            autoComplete="off"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
           {filteredItems.map((item, index) => (
             <a
               key={index}
               href="#"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 active:bg-blue-100 cursor-pointer rounded-md"
+              className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 active:bg-blue-100 cursor-pointer rounded-md"
             >
               {item}
             </a>
