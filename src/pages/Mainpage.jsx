@@ -1,9 +1,9 @@
 import Sidebar from "../components/Sidebar";
-import Modal from "../components/Modal";
+import Modal from "../components/CreateNoteModal";
 import Navbar from "../components/Navbar"
 import Dropdown from "../components/FilterDropdown";
 import NotesList from "./Note/NotesList";
-import NoteModal from "../components/NoteModal";
+import NoteModal from "../components/EditNoteModal";
 import { useState, useEffect } from "react";
 import axios from 'axios'; // Import axios for making API requests
 
@@ -19,8 +19,11 @@ const Mainpage = () => {
                     withCredentials: true, // Include cookies in the request
                 });
 
-                // Sort notes by date_update in descending order
-                const sortedNotes = response.data.note.sort(
+                // Filter out notes that have a status of "deleted"
+                const activeNotes = response.data.note.filter(note => note.status !== 'deleted');
+
+                // Sort active notes by date_update in descending order
+                const sortedNotes = activeNotes.sort(
                     (a, b) => new Date(b.date_update) - new Date(a.date_update)
                 );
 

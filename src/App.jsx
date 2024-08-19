@@ -17,7 +17,7 @@ function App() {
         try {
           // Make a request to a protected endpoint to check if the user is authenticated
           await axios.get("http://localhost:8000/protected-endpoint", {
-            withCredentials: true, // Ensure cookies are sent with the request
+            withCredentials: true,
           });
         } catch (error) {
           if (error.response && error.response.status === 401) {

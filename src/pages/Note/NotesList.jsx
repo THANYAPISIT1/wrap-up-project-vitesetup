@@ -1,6 +1,11 @@
 
-const NotesList = ({ title, content, onClick }) => {
+// Utility function to strip HTML tags
+const stripHTML = (html) => {
+    let doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+};
 
+const NotesList = ({ title, content, onClick }) => {
   return (
     <div
       className="p-4 bg-white rounded-lg shadow-md cursor-pointer h-48 hover:scale-105 transition-all duration-300" // Fixed height
@@ -15,7 +20,7 @@ const NotesList = ({ title, content, onClick }) => {
           WebkitLineClamp: 4, 
         }}
       >
-        {content}
+        {stripHTML(content)} {/* Strip HTML tags before displaying content */}
       </p>
     </div>
   );

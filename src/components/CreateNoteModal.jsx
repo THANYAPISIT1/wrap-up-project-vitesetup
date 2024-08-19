@@ -1,4 +1,4 @@
-import { useState,useRef,useMemo } from 'react';
+import { useState,useRef } from 'react';
 import { FaBook } from "react-icons/fa";
 import { BiSolidJoystick } from "react-icons/bi";
 import { IoMdFitness } from "react-icons/io";
@@ -6,13 +6,16 @@ import { FaMoneyBill } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
 import { TiPlus } from "react-icons/ti";
 import JoditEditor from "jodit-react";
-import HTMLReactParser from "html-react-parser";
-
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Modal = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const editor = useRef(null)
     const [content, setContent] = useState('')
+    const [title, setTitle] = useState('');
+    const [label, setLabel] = useState('');
+    const navigate = useNavigate();
 
     const modalHandler = (val) => {
         if (val) {
@@ -20,6 +23,7 @@ const Modal = () => {
         } else {
             fadeOut(document.getElementById("modal"));
         }
+        setModalOpen(val);
     };
 
     const fadeOut = (el) => {
@@ -45,6 +49,25 @@ const Modal = () => {
         })();
     };
 
+    const handleSubmit = async () => {
+        try {
+            const response = await axios.post('http://localhost:8000/note', {
+                title,
+                content,
+                label
+            }, { withCredentials: true });
+
+            console.log(response.data.message);
+
+            // Close the modal
+            modalHandler(false);
+            navigate('/');
+            
+        } catch (error) {
+            console.error('Error creating note:', error);
+        }
+    };
+
     return (
         <div>
             <div
@@ -53,7 +76,7 @@ const Modal = () => {
                 }`}
                 id="modal"
             >
-                <div role="alert" className="container mx-auto w-11/12 md:w-2/3 max-w-lg overflow-auto z-50">
+                <div role="alert" className="container mx-auto w-11/12 md:w-2/3 max-w-4xl overflow-auto z-50">
                     <div className="relative py-8 px-5 md:px-10 bg-white shadow-md rounded border border-gray-400">
                         <div className="w-full flex justify-start text-gray-600 mb-3">
                             <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-wallet" width="52" height="52" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -64,8 +87,14 @@ const Modal = () => {
                         </div>
                         <h1 className="text-gray-800 font-lg font-bold tracking-normal leading-tight mb-4">{`Let's take a Note`}</h1>
                         <label htmlFor="name" className="text-gray-800 text-sm font-bold leading-tight tracking-normal">Title</label>
-                        <input id="name" className="mb-5 mt-2 text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-3 text-sm border-gray-300 rounded border" placeholder="Name of Note" />
-                            <div className="flex justify-center w-full max-w-2xl">
+                        <input 
+                            id="name" 
+                            className="mb-5 mt-2 text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-3 text-sm border-gray-300 rounded border" 
+                            placeholder="Name of Note" 
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
+                            <div className="flex justify-center w-full max-w-fit mb-2">
                                 <button className="w-fit px-2 py-1 h-8 bg-[#8684FB] flex items-center justify-center rounded-lg m-1 font-bold text-white">
                                     <FaBook />
                                     <p className="ml-1">Study</p>
@@ -94,19 +123,29 @@ const Modal = () => {
                                 <JoditEditor
                                     ref={editor}
                                     value={content}
-                                    onChange={newContent => setContent(newContent)}
+                                    onBlur={newContent => setContent(newContent)}
                                     config={{
-                                        height: 400, // Set the height of the editor
-                                        width: '100%', // Set the width of the editor to 100% of its container
-                                        theme: 'default', // You can also change the theme if needed
+                                        height: 400,
+                                        width: '100%',
+                                        theme: 'default',
                                     }}
-                                    className="h-[400px] w-full" // Tailwind CSS for additional styling if needed
+                                    className="h-[400px] w-full"
                                 />
                         </div>
 
                         <div className="flex items-center justify-start w-full">
-                            <button className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 transition duration-150 ease-in-out hover:bg-indigo-600 bg-indigo-700 rounded text-white px-8 py-2 text-sm">Submit</button>
-                            <button className="focus:outline-none focus:ring-2 focus:ring-offset-2  focus:ring-gray-400 ml-3 bg-gray-100 transition duration-150 text-gray-600 ease-in-out hover:border-gray-400 hover:bg-gray-300 border rounded px-8 py-2 text-sm" onClick={() => modalHandler(false)}>Cancel</button>
+                        <button
+                                onClick={handleSubmit}
+                                className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 transition duration-150 ease-in-out hover:bg-indigo-600 bg-indigo-700 rounded text-white px-8 py-2 text-sm"
+                            >
+                                Submit
+                            </button>
+                            <button
+                                className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 ml-3 bg-gray-100 transition duration-150 text-gray-600 ease-in-out hover:border-gray-400 hover:bg-gray-300 border rounded px-8 py-2 text-sm"
+                                onClick={() => modalHandler(false)}
+                            >
+                                Cancel
+                            </button>
                         </div>
                         <button className="cursor-pointer absolute top-0 right-0 mt-4 mr-5 text-gray-400 hover:text-gray-600 transition duration-150 ease-in-out rounded focus:ring-2 focus:outline-none focus:ring-gray-600" onClick={() => modalHandler(false)} aria-label="close modal" role="button">
                             <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-x" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
