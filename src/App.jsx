@@ -1,12 +1,15 @@
 import './App.css'
-import { Routes,Route } from 'react-router-dom'
+import { Routes,Route,Navigate } from 'react-router-dom'
 import LoginPage from './pages/LoginRegister/LoginPage'
 import Mainpage from './pages/Mainpage'
 import RegisterPage from './pages/LoginRegister/RegisterPage'
 import TestPage from './TestPage'
+import Archive from './pages/Archive/ArchivePage'
+import Trash from './pages/Trash/TrashPage'
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import axios from 'axios'
+import Summary from './pages/Summary/SummaryPage'
 
 function App() {
   const ProtectedRoutes = ({ children }) => {
@@ -42,8 +45,13 @@ function App() {
           element={
             <ProtectedRoutes>
               <Routes>
-                <Route path='/' element={<Mainpage/>}/>
+                <Route path='/' element={<Navigate to="/note" replace />}/>
+                <Route path="/note" element={<Mainpage />} />
                 <Route path='test' element={<TestPage/>}/>
+                <Route path='/archive' element={<Archive/>} />
+                <Route path='/summary' element={<Summary/>} />
+                <Route path='/trash' element={<Trash/>} />
+
               </Routes>
             </ProtectedRoutes>
           }

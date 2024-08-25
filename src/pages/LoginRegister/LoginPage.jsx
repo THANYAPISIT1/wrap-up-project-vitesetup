@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -34,7 +34,7 @@ const LoginPage = () => {
         // Redirect to a different page (e.g., home/dashboard) after login
         setTimeout(() => {
           navigate('/'); // Change to your desired route after login
-        }, 2000);
+        }, );
       }
     } catch (error) {
       setMessage(

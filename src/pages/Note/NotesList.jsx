@@ -17,10 +17,10 @@ const NotesList = ({ title, content, onClick }) => {
         style={{
           display: '-webkit-box',
           WebkitBoxOrient: 'vertical',
-          WebkitLineClamp: 4, 
+          WebkitLineClamp: 3 
         }}
       >
-        {stripHTML(content)} {/* Strip HTML tags before displaying content */}
+        {stripHTML(content)}
       </p>
     </div>
   );

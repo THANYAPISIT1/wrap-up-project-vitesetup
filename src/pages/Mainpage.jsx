@@ -1,7 +1,6 @@
 import Sidebar from "../components/Sidebar";
 import Modal from "../components/CreateNoteModal";
 import Navbar from "../components/Navbar"
-import Dropdown from "../components/FilterDropdown";
 import NotesList from "./Note/NotesList";
 import NoteModal from "../components/EditNoteModal";
 import { useState, useEffect } from "react";
@@ -10,12 +9,15 @@ import axios from 'axios'; // Import axios for making API requests
 const Mainpage = () => {
     const [notes, setNotes] = useState([]);
     const [selectedNote, setSelectedNote] = useState(null);
+    const [filter, setFilter] = useState('last update'); // Default filter
+    const [label, setLabel] = useState('');
 
     // Fetch notes from API when component mounts
     useEffect(() => {
         const fetchNotes = async () => {
             try {
                 const response = await axios.get('http://localhost:8000/note', {
+                    params: { filter, label },
                     withCredentials: true, // Include cookies in the request
                 });
 
@@ -34,11 +36,12 @@ const Mainpage = () => {
         };
 
         fetchNotes();
-    }, []); // Empty dependency array ensures this runs only once on mount
-
+    }, [filter, label]); 
+    
     const handleNoteClick = (note) => {
         setSelectedNote(note);
     };
+    console.log(setFilter.value)
 
     const closeModal = () => {
         setSelectedNote(null);
@@ -57,14 +60,44 @@ const Mainpage = () => {
 
     return (
         <div className="flex bg-gray-100 h-screen">
-            <Sidebar />
-            <div className="flex-1 ml-[20rem]">
-                <Navbar />
-                <div className="flex justify-between m-4">
-                    <Dropdown />
-                    <Modal />
+        <Sidebar />
+        <div className="flex-1 ml-[20rem]">
+            <Navbar />
+            <div className="flex justify-between m-4">
+                {/* Filter and Label Dropdowns */}
+                <div className="flex space-x-4">
+                    <div>
+                        <label htmlFor="filter" className="mr-2">Sort By:</label>
+                        <select
+                            id="filter"
+                            value={filter}
+                            onChange={(e) => setFilter(e.target.value)}
+                            className="border border-gray-300 rounded-md py-2 px-3"
+                        >
+                            <option value="title">Title</option>
+                            <option value="date create">Date Created</option>
+                            <option value="last update">Last Updated</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="label" className="mr-2">Label:</label>
+                        <select
+                            id="label"
+                            value={label}
+                            onChange={(e) => setLabel(e.target.value)}
+                            className="border border-gray-300 rounded-md py-2 px-3"
+                        >
+                            <option value="">All</option>
+                            <option value="study">Study</option>
+                            <option value="health">Health</option>
+                            <option value="finance">Finance</option>
+                            <option value="diary">Diary</option>
+                        </select>
+                    </div>
                 </div>
-                <hr />
+                <Modal />
+            </div>
+            <hr />
 
                 {/* -----------Content----------- */}
 
