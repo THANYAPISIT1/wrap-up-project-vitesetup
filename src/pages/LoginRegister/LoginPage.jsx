@@ -6,7 +6,7 @@ const LoginPage = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
-    remember: false,
+    remember: false, // rememberMe field
   });
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
@@ -19,13 +19,14 @@ const LoginPage = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handlelogin = async (e) => {
     e.preventDefault();
 
     try {
       const response = await axios.post("http://localhost:8000/api/login", {
         username: formData.username,
         password: formData.password,
+        rememberMe: formData.remember, // Include the rememberMe flag in the request
       }, { withCredentials: true }); // Send credentials for cookies
 
       setMessage(response.data.message);
@@ -34,7 +35,7 @@ const LoginPage = () => {
         // Redirect to a different page (e.g., home/dashboard) after login
         setTimeout(() => {
           navigate('/'); // Change to your desired route after login
-        }, );
+        }, 1000); // Optionally add a delay before redirecting
       }
     } catch (error) {
       setMessage(
@@ -54,7 +55,7 @@ const LoginPage = () => {
       </div>
       <div className="lg:p-36 md:p-52 sm:20 p-8 w-full lg:w-1/2">
         <h1 className="text-2xl font-semibold mb-4">Login</h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handlelogin}>
           <div className="mb-4">
             <label htmlFor="username" className="block text-gray-600">Username</label>
             <input

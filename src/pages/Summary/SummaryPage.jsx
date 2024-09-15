@@ -40,7 +40,7 @@ const Summary = () => {
     };
 
     return (
-        <div className="flex bg-gray-100 h-screen">
+        <div className="flex bg-gray-100 min-h-screen max-h-content">
             <Sidebar />
             <div className="flex-1 ml-[20rem]">
                 <Navbar />
@@ -58,6 +58,7 @@ const Summary = () => {
                                 title={summary.title} // Assuming your summary object has a 'title'
                                 content={summary.content}
                                 onClick={() => handleSummaryClick(summary)} // Handle click to open modal
+                                dateUpdate={summary.date_create} 
                             />
                         ))}
                     </div>

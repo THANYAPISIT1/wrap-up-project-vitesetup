@@ -11,8 +11,8 @@ import axios from 'axios';
 
 const Modal = () => {
     const [modalOpen, setModalOpen] = useState(false);
-    const editor = useRef(null)
-    const [content, setContent] = useState('')
+    const editor = useRef(null);
+    const [content, setContent] = useState('');
     const [title, setTitle] = useState('');
     const [label, setLabel] = useState('');
     const navigate = useNavigate();
@@ -49,6 +49,17 @@ const Modal = () => {
         })();
     };
 
+    const handleLabelClick = (selectedLabel) => {
+        if (label === selectedLabel) {
+            // Unselect the label
+            setLabel('');
+        } else {
+            // Select the label
+            setLabel(selectedLabel);
+        }
+        console.log(selectedLabel)
+    };
+
     const handleSubmit = async () => {
         try {
             const response = await axios.post('http://localhost:8000/note', {
@@ -71,7 +82,7 @@ const Modal = () => {
     return (
         <div>
             <div
-                className={`py-12 bg-gray-700 transition duration-150 ease-in-out z-10 fixed inset-0 ${
+                className={`py-12 bg-black bg-opacity-50 transition duration-150 ease-in-out z-10 fixed inset-0 ${
                     modalOpen ? 'flex' : 'hidden'
                 }`}
                 id="modal"
@@ -95,23 +106,38 @@ const Modal = () => {
                             onChange={(e) => setTitle(e.target.value)}
                         />
                             <div className="flex justify-center w-full max-w-fit mb-2">
-                                <button className="w-fit px-2 py-1 h-8 bg-[#8684FB] flex items-center justify-center rounded-lg m-1 font-bold text-white">
+                                <button 
+                                    className={`w-fit px-2 py-1 h-8 ${label === 'Study' ? 'bg-[#8684FB]' : 'bg-gray-400'} flex items-center justify-center rounded-lg m-1 font-bold text-white`}
+                                    onClick={() => handleLabelClick('Study')}
+                                >
                                     <FaBook />
                                     <p className="ml-1">Study</p>
                                 </button>
-                                <button className="w-fit px-2 py-1 h-8 bg-[#A47EE3] flex items-center justify-center rounded-lg m-1 font-bold text-white">
+                                <button 
+                                    className={`w-fit px-2 py-1 h-8 ${label === 'Hobby' ? 'bg-[#A47EE3]' : 'bg-gray-400'} flex items-center justify-center rounded-lg m-1 font-bold text-white`}
+                                    onClick={() => handleLabelClick('Hobby')}
+                                >
                                     <BiSolidJoystick />
                                     <p className="ml-1">Hobby</p>
                                 </button>
-                                <button className="w-fit px-2 py-1 h-8 bg-[#48EA58] flex items-center justify-center rounded-lg m-1 font-bold text-white">
+                                <button 
+                                    className={`w-fit px-2 py-1 h-8 ${label === 'Health' ? 'bg-[#48EA58]' : 'bg-gray-400'} flex items-center justify-center rounded-lg m-1 font-bold text-white`}
+                                    onClick={() => handleLabelClick('Health')}
+                                >
                                     <IoMdFitness />
                                     <p className="ml-1">Health</p>
                                 </button>
-                                <button className="w-fit px-2 py-1 h-8 bg-[#E7D000] flex items-center justify-center rounded-lg m-1 font-bold text-white">
+                                <button 
+                                    className={`w-fit px-2 py-1 h-8 ${label === 'Finance' ? 'bg-[#E7D000]' : 'bg-gray-400'} flex items-center justify-center rounded-lg m-1 font-bold text-white`}
+                                    onClick={() => handleLabelClick('Finance')}
+                                >
                                     <FaMoneyBill />
                                     <p className="ml-1">Finance</p>
                                 </button>
-                                <button className="w-fit px-2 py-1 h-8 bg-[#F77C7C] flex items-center justify-center rounded-lg m-1 font-bold text-white">
+                                <button 
+                                    className={`w-fit px-2 py-1 h-8 ${label === 'Diary' ? 'bg-[#F77C7C]' : 'bg-gray-400'} flex items-center justify-center rounded-lg m-1 font-bold text-white`}
+                                    onClick={() => handleLabelClick('Diary')}
+                                >
                                     <FaPencilAlt />
                                     <p className="ml-1">Diary</p>
                                 </button>

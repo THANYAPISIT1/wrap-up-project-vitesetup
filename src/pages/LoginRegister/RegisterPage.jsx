@@ -108,7 +108,7 @@ const RegisterPage = () => {
             type="submit"
             className="bg-[#008000] hover:bg-[#00C000] text-white font-semibold rounded-md py-2 px-4 mt-4 w-full"
           >
-            Create User
+            Register
           </button>
         </form>
         {message && (

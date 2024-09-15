@@ -2,9 +2,16 @@ import { FaArchive } from "react-icons/fa";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { BsClipboard2CheckFill } from "react-icons/bs";
 import { FaNoteSticky } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
+  const location = useLocation(); // Get current path
+
+  const activeClass =
+    "scale-105 bg-blue-50 bg-opacity-80 text-blue-900"; // Active class styling
+  const defaultClass =
+    "transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-blue-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900";
+
   return (
     <div className="fixed top-0 left-0 h-full flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
       <div className="mb-2 p-4">
@@ -20,7 +27,9 @@ const Sidebar = () => {
           <div
             role="button"
             tabIndex="0"
-            className="flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-gray-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none"
+            className={`flex items-center w-full p-3 rounded-lg text-start leading-tight ${
+              location.pathname === "/note" ? activeClass : defaultClass
+            } outline-none`}
           >
             <div className="grid place-items-center mr-4">
               <FaNoteSticky size={18} />
@@ -34,7 +43,9 @@ const Sidebar = () => {
           <div
             role="button"
             tabIndex="0"
-            className="flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-blue-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none"
+            className={`flex items-center w-full p-3 rounded-lg text-start leading-tight ${
+              location.pathname === "/archive" ? activeClass : defaultClass
+            } outline-none`}
           >
             <div className="grid place-items-center mr-4">
               <FaArchive size={18} />
@@ -48,7 +59,9 @@ const Sidebar = () => {
           <div
             role="button"
             tabIndex="0"
-            className="flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-blue-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none"
+            className={`flex items-center w-full p-3 rounded-lg text-start leading-tight ${
+              location.pathname === "/summary" ? activeClass : defaultClass
+            } outline-none`}
           >
             <div className="grid place-items-center mr-4">
               <BsClipboard2CheckFill size={18} />
@@ -62,7 +75,9 @@ const Sidebar = () => {
           <div
             role="button"
             tabIndex="0"
-            className="flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-blue-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none"
+            className={`flex items-center w-full p-3 rounded-lg text-start leading-tight ${
+              location.pathname === "/trash" ? activeClass : defaultClass
+            } outline-none`}
           >
             <div className="grid place-items-center mr-4">
               <RiDeleteBin5Fill size={20} />
@@ -71,38 +86,14 @@ const Sidebar = () => {
           </div>
         </Link>
 
-        {/* Profile Link */}
-        <Link to="/profile">
-          <div
-            role="button"
-            tabIndex="0"
-            className="flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-blue-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none"
-          >
-            <div className="grid place-items-center mr-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
-                className="h-5 w-5"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            Profile
-          </div>
-        </Link>
-
         {/* Settings Link */}
         <Link to="/settings">
           <div
             role="button"
             tabIndex="0"
-            className="flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-blue-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none"
+            className={`flex items-center w-full p-3 rounded-lg text-start leading-tight ${
+              location.pathname === "/settings" ? activeClass : defaultClass
+            } outline-none`}
           >
             <div className="grid place-items-center mr-4">
               <svg
@@ -124,11 +115,13 @@ const Sidebar = () => {
         </Link>
 
         {/* Log Out Link */}
-        <Link to="/logout">
+        <Link to="/login">
           <div
             role="button"
             tabIndex="0"
-            className="flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-blue-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none"
+            className={`flex items-center w-full p-3 rounded-lg text-start leading-tight ${
+              location.pathname === "/logout" ? activeClass : defaultClass
+            } outline-none`}
           >
             <div className="grid place-items-center mr-4">
               <svg
@@ -140,7 +133,7 @@ const Sidebar = () => {
               >
                 <path
                   fillRule="evenodd"
-                  d="M12 2.25a.75.75 0 01.75.75v9a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM6.166 5.106a.75.75 0 010 1.06 8.25 8.25 0 1011.668 0 .75.75 0 111.06-1.06c3.808 3.807 3.808 9.98 0 13.788-3.807 3.808-9.98 3.808-13.788 0-3.808-3.807-3.808-9.98 0-13.788a.75.75 0 011.06 0z"
+                  d="M7.5 3.75A.75.75 0 018.25 3h10.5a.75.75 0 01.75.75v16.5a.75.75 0 01-.75.75H8.25a.75.75 0 010-1.5h9.75V4.5H8.25a.75.75 0 01-.75-.75zM10.47 11.03a.75.75 0 10-1.06 1.06l1.72 1.72H3.75a.75.75 0 000 1.5h7.38l-1.72 1.72a.75.75 0 001.06 1.06l3-3a.75.75 0 000-1.06l-3-3z"
                   clipRule="evenodd"
                 />
               </svg>

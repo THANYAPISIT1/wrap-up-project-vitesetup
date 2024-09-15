@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import JoditEditor from 'jodit-react';
+import { BsSave2Fill } from 'react-icons/bs'; // Import the icon
 
 const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
     const [editableContent, setEditableContent] = useState(content);
     const [editableTitle, setEditableTitle] = useState(title);
-    const [showConfirm, setShowConfirm] = useState(false); // State for confirmation dialog
-    const editor = useRef(null); // Reference for Jodit Editor
+    const [showConfirm, setShowConfirm] = useState(false);
+    const editor = useRef(null);
 
     useEffect(() => {
         setEditableContent(content);
@@ -17,10 +18,7 @@ const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
         try {
             const response = await axios.put(
                 `http://localhost:8000/note/${NID}`,
-                {
-                    title: editableTitle,
-                    content: editableContent,
-                },
+                { title: editableTitle, content: editableContent },
                 { withCredentials: true }
             );
 
@@ -29,10 +27,30 @@ const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
             } else {
                 console.log(response.data.message);
             }
-
+            onSave();
             onClose();
         } catch (error) {
             console.error("Error updating note:", error.message);
+        }
+    };
+
+    const handleArchive = async () => {
+        try {
+            const response = await axios.put(
+                `http://localhost:8000/note/archive/${NID}`,
+                { status: 'archive' },
+                { withCredentials: true }
+            );
+
+            if (response.data.message === "Note archived successfully!!") {
+                onSave(); // Notify parent component to refresh notes
+            } else {
+                console.log(response.data.message);
+            }
+            onSave();
+            onClose();
+        } catch (error) {
+            console.error("Error archiving note:", error.message);
         }
     };
 
@@ -40,7 +58,7 @@ const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
         try {
             const response = await axios.put(
                 `http://localhost:8000/note/delete/${NID}`,
-                { status: 'deleted' }, // Soft delete by changing status
+                { status: 'deleted' },
                 { withCredentials: true }
             );
 
@@ -49,13 +67,12 @@ const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
             } else {
                 console.log(response.data.message);
             }
-
+            onSave();
             onClose();
         } catch (error) {
             console.error("Error deleting note:", error.message);
         }
     };
-    
 
     const handleDeleteClick = () => {
         setShowConfirm(true); // Show the confirmation dialog
@@ -73,7 +90,7 @@ const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex justify-center items-center">
+        <div className="fixed inset-0 z-50 flex justify-center items-center ">
             <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose}></div>
             <div className="relative z-10 bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 p-6">
                 <div className="flex justify-between mb-4">
@@ -108,6 +125,12 @@ const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
                         className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-700"
                     >
                         Cancel
+                    </button>
+                    <button
+                        onClick={handleArchive} // Archive button handler
+                        className="px-4 py-2 bg-green-500 text-white rounded-md flex items-center hover:bg-green-700"
+                    >
+                        <BsSave2Fill className="mr-2" /> Archive
                     </button>
                     <button
                         onClick={handleSave}

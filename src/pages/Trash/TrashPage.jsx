@@ -36,7 +36,7 @@ const Trash = () => {
     }
 
     return (
-        <div className="flex bg-gray-100 h-screen">
+        <div className="flex bg-gray-100 min-h-screen max-h-content">
             <Sidebar />
             <div className="flex-1 ml-[20rem]">
                 <Navbar />
@@ -53,6 +53,7 @@ const Trash = () => {
                                     key={index}
                                     title={note.title}
                                     content={note.content}
+                                    dateUpdate={note.date_update} 
                                 />
                             ))
                         ) : (
