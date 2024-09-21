@@ -70,7 +70,7 @@ const Archive = () => {
 
                 <div className="p-8">
                     <div className="flex justify-between">
-                        <h1 className="text-3xl font-bold mb-6">Archived Notes</h1>
+                        <h1 className="text-3xl font-bold mb-6">Archived Notes ({notes.length})</h1>
                     </div>
                     <motion.div layout className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
                         {notes.map((note, index) => (
@@ -80,6 +80,7 @@ const Archive = () => {
                                     title={note.title}
                                     content={note.content}
                                     dateUpdate={note.date_update}
+                                    label={note.label}
                                     onClick={() => handleNoteClick(note)} // Open modal on click
                                 />
                             </motion.div>

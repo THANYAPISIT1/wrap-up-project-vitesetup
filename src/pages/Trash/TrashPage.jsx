@@ -68,7 +68,7 @@ const Trash = () => {
                 {/* -----------Content----------- */}
                 <div className="p-8">
                     <div className="flex justify-between">
-                        <h1 className="text-3xl font-bold mb-6">Trash</h1>
+                        <h1 className="text-3xl font-bold mb-6">Trash ({trashNotes.length})</h1>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
                         {trashNotes.map((note, index) => (
@@ -78,6 +78,7 @@ const Trash = () => {
                                     title={note.title}
                                     content={note.content}
                                     dateUpdate={note.date_update} 
+                                    label={note.label}
                                     onClick={() => handleNoteClick(note)} 
                                 />
                             </motion.div>

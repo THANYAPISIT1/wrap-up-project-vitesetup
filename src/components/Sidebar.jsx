@@ -88,7 +88,7 @@ const Sidebar = ({ onLogoutClick }) => {
           </div>
         </Link>
 
-        {/* Settings Link */}
+        {/* Settings Link
         <Link to="/settings">
           <div
             role="button"
@@ -114,7 +114,7 @@ const Sidebar = ({ onLogoutClick }) => {
             </div>
             Settings
           </div>
-        </Link>
+        </Link> */}
 
         {/* Log Out Link */}
         <div

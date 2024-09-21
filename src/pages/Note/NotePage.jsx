@@ -77,12 +77,12 @@ const NotePage = () => {
         setSelectedNotes(selectedNotes.filter((id) => id !== note.NID));
       } else {
         setSelectedNotes([...selectedNotes, note.NID]);
-
+        setSelectionLabel(note.label);
         // Detect first note selection and set the label for filtering
         if (selectedNotes.length === 0) {
-          setSelectionLabel(note.label);
           fetchNotes(note.label); // Fetch notes filtered by the first selected note's label
         }
+
         console.log(`Note selected:`, [...selectedNotes, note.NID]);
       }
     } else {
@@ -140,7 +140,7 @@ const NotePage = () => {
   };
 
 
-  const handleConfirmSummary = async (selectedNotes,note) => {
+  const handleConfirmSummary = async (selectedNotes,selectionLabel) => {
     try {
       const response = await axios.post(
         "http://localhost:8000/summarize",
@@ -148,22 +148,21 @@ const NotePage = () => {
           label: selectionLabel },
         { withCredentials: true }
       );
-      console.log(`Note label for sum`,note.label)
+      console.log(`Note label for sum`,selectionLabel)
 
       alert(response.data.message);
 
-      setIsSelectionMode(false); // Exit selection mode
-      setSelectedNotes([]);      // Clear selected notes
-      setSelectionLabel(null);   // Clear any label filtering used during selection
-      setIsModalOpen(false);     // Close the confirmation modal
-      fetchNotes();              // Fetch the notes again to refresh the UI
+
     } catch (error) {
       console.error("Error generating summary:", error);
       alert("Summary generation failed.");
       setIsModalOpen(false); // Close the modal on failure
     }
-    setSelectedNotes([]);
-    setIsSelectionMode(false);
+    setIsSelectionMode(false); // Exit selection mode
+    setSelectedNotes([]);      // Clear selected notes
+    setSelectionLabel(null);   // Clear any label filtering used during selection
+    setIsModalOpen(false);     // Close the confirmation modal
+    fetchNotes();              // Fetch the notes again to refresh the UI
   };
   
 

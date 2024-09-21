@@ -20,7 +20,7 @@ const Summary = () => {
     useEffect(() => {
         const fetchSummaryNotes = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/summary/', {
+                const response = await axios.get('http://localhost:8000/summary', {
                     withCredentials: true, // Include cookies in the request
                 });
 
@@ -46,22 +46,22 @@ const Summary = () => {
 
                 <div className="p-8">
                     <div className="flex justify-between">
-                        <h1 className="text-3xl font-bold mb-6">Summary Notes</h1>
+                        <h1 className="text-3xl font-bold mb-6">Summary Notes ({summaries.length})</h1>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
                         {summaries.map((summary, index) => (
                             <Link
-                                to={`/summary/${summary.SID}`} // เปลี่ยนไปใช้ Link และส่ง SID ไปใน URL
+                                to={`/summary/${summary.SID}`} 
                                 state={{ 
-                                    title: summary.title, 
+                                    SID: summary.SID, 
                                     content: summary.content, 
                                     label: summary.label, 
                                     dateUpdate: summary.date_create 
-                                }} // ส่ง prop อื่นๆ ผ่าน state
+                                }} 
                                 key={index}
                                 >
                                     <NotesList
-                                        title={summary.title} // Assuming your summary object has a 'title'
+                                        SID={summary.SID} 
                                         content={summary.content}
                                         label={summary.label}
                                         dateUpdate={summary.date_create}

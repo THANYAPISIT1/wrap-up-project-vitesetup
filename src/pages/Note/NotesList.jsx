@@ -16,9 +16,10 @@ const labelColors = {
   Diary: '#F77C7C',
 };
 
-const NotesList = ({ title, content, label , dateUpdate, onClick, onPinClick, isPinned , isSelected}) => {
+const NotesList = ({ title, content,SID , label , dateUpdate, onClick, onPinClick, isPinned , isSelected}) => {
   const location = useLocation(); // Get the current route
 
+  console.log([SID,label])
   return (
     <motion.div 
       animate={{opacity: 1}} 
@@ -30,10 +31,10 @@ const NotesList = ({ title, content, label , dateUpdate, onClick, onPinClick, is
     >
       <div
         className="inline-block px-2 py-1 w-2/3 mb-1 text-white text-xs rounded"
-        style={{ backgroundColor: labelColors[label] || '#ccc' }} // Fallback color if label not found
+        style={{ backgroundColor: labelColors[label ? label.charAt(0).toUpperCase() + label.slice(1) : ''] || '#ccc' }} // Fallback color if label not found
       >
         {/* Hide text below medium screens */}
-        <span className="hidden md:inline">{label}</span>
+        <span className="hidden md:inline">{label && label.charAt(0).toUpperCase() + label.slice(1)}</span>
       </div>
 
       {/* Conditionally render Pin Icon based on the current route */}
