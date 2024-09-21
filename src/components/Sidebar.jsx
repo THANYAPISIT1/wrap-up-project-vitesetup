@@ -4,13 +4,15 @@ import { BsClipboard2CheckFill } from "react-icons/bs";
 import { FaNoteSticky } from "react-icons/fa6";
 import { Link, useLocation } from "react-router-dom";
 
-const Sidebar = () => {
+const Sidebar = ({ onLogoutClick }) => {
   const location = useLocation(); // Get current path
 
   const activeClass =
     "scale-105 bg-blue-50 bg-opacity-80 text-blue-900"; // Active class styling
   const defaultClass =
     "transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-blue-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900";
+
+
 
   return (
     <div className="fixed top-0 left-0 h-full flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
@@ -115,35 +117,36 @@ const Sidebar = () => {
         </Link>
 
         {/* Log Out Link */}
-        <Link to="/login">
-          <div
-            role="button"
-            tabIndex="0"
-            className={`flex items-center w-full p-3 rounded-lg text-start leading-tight ${
-              location.pathname === "/logout" ? activeClass : defaultClass
-            } outline-none`}
-          >
-            <div className="grid place-items-center mr-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
-                className="h-5 w-5"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M7.5 3.75A.75.75 0 018.25 3h10.5a.75.75 0 01.75.75v16.5a.75.75 0 01-.75.75H8.25a.75.75 0 010-1.5h9.75V4.5H8.25a.75.75 0 01-.75-.75zM10.47 11.03a.75.75 0 10-1.06 1.06l1.72 1.72H3.75a.75.75 0 000 1.5h7.38l-1.72 1.72a.75.75 0 001.06 1.06l3-3a.75.75 0 000-1.06l-3-3z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            Log Out
+        <div
+          role="button"
+          tabIndex="0"
+          onClick={onLogoutClick} //  Updated to use prop function
+          className={`flex items-center w-full p-3 rounded-lg text-start leading-tight ${
+            location.pathname === "/logout" ? activeClass : defaultClass
+          } outline-none`}
+        >
+          <div className="grid place-items-center mr-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+              className="h-5 w-5"
+            >
+              <path
+                fillRule="evenodd"
+                d="M7.5 3.75A.75.75 0 018.25 3h10.5a.75.75 0 01.75.75v16.5a.75.75 0 01-.75.75H8.25a.75.75 0 010-1.5h9.75V4.5H8.25a.75.75 0 01-.75-.75zM10.47 11.03a.75.75 0 10-1.06 1.06l1.72 1.72H3.75a.75.75 0 000 1.5h7.38l-1.72 1.72a.75.75 0 001.06 1.06l3-3a.75.75 0 000-1.06l-3-3z"
+                clipRule="evenodd"
+              />
+            </svg>
           </div>
-        </Link>
+          Log Out
+        </div>
       </nav>
     </div>
   );
 };
 
 export default Sidebar;
+
+

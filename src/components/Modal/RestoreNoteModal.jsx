@@ -25,5 +25,6 @@ const RestoreNoteModal = ({ isOpen, onClose, onRestore, note }) => {
     </div>
   );
 };
-
-export default RestoreNoteModal;
+  
+  export default RestoreNoteModal;
+  

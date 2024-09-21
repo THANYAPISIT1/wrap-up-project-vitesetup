@@ -1,8 +1,9 @@
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import NotesList from "../Note/NotesList";
-import SummaryModal from "./SummaryModal";
+import ConfirmLogoutModal from "../../components/Modal/ConfirmLogoutModal";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from 'axios';
 
 const stripHTML = (html) => {
@@ -12,7 +13,8 @@ const stripHTML = (html) => {
 
 const Summary = () => {
     const [summaries, setSummaries] = useState([]);
-    const [selectedSummary, setSelectedSummary] = useState(null);
+    const [showConfirmLogout, setShowConfirmLogout] = useState(false); 
+
 
     // Fetch summaries from API when component mounts
     useEffect(() => {
@@ -31,17 +33,12 @@ const Summary = () => {
         fetchSummaryNotes();
     }, []);
 
-    const handleSummaryClick = (summary) => {
-        setSelectedSummary(summary);
-    };
 
-    const closeModal = () => {
-        setSelectedSummary(null);
-    };
+
 
     return (
         <div className="flex bg-gray-100 min-h-screen max-h-content">
-            <Sidebar />
+            <Sidebar onLogoutClick={() => setShowConfirmLogout(true)}/>
             <div className="flex-1 ml-[20rem]">
                 <Navbar />
 
@@ -53,26 +50,32 @@ const Summary = () => {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
                         {summaries.map((summary, index) => (
-                            <NotesList
+                            <Link
+                                to={`/summary/${summary.SID}`} // เปลี่ยนไปใช้ Link และส่ง SID ไปใน URL
+                                state={{ 
+                                    title: summary.title, 
+                                    content: summary.content, 
+                                    label: summary.label, 
+                                    dateUpdate: summary.date_create 
+                                }} // ส่ง prop อื่นๆ ผ่าน state
                                 key={index}
-                                title={summary.title} // Assuming your summary object has a 'title'
-                                content={summary.content}
-                                onClick={() => handleSummaryClick(summary)} // Handle click to open modal
-                                dateUpdate={summary.date_create} 
-                            />
+                                >
+                                    <NotesList
+                                        title={summary.title} // Assuming your summary object has a 'title'
+                                        content={summary.content}
+                                        label={summary.label}
+                                        dateUpdate={summary.date_create}
+                                    />
+                            </Link>
                         ))}
                     </div>
                 </div>
-
-                {/* SummaryModal */}
-                {selectedSummary && (
-                    <SummaryModal
-                        isOpen={!!selectedSummary}
-                        onClose={closeModal}
-                        title={selectedSummary.title}
-                        content={stripHTML(selectedSummary.content)}
+                {showConfirmLogout && (
+                    <ConfirmLogoutModal
+                        onCancel={() => setShowConfirmLogout(false)} // Handle cancellation
                     />
                 )}
+
             </div>
         </div>
     );

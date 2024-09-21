@@ -1,7 +1,8 @@
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import NotesList from "../Note/NotesList";
-import RestoreNoteModal from "./RestoreNoteModal";
+import RestoreNoteModal from "../../components/Modal/RestoreNoteModal";
+import ConfirmLogoutModal from "../../components/Modal/ConfirmLogoutModal";
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import { motion } from "framer-motion";
@@ -10,6 +11,8 @@ const Archive = () => {
     const [notes, setNotes] = useState([]);
     const [selectedNote, setSelectedNote] = useState(null); 
     const [isModalOpen, setIsModalOpen] = useState(false); 
+    const [showConfirmLogout, setShowConfirmLogout] = useState(false); 
+
 
     // Fetch notes from API when component mounts
     useEffect(() => {
@@ -59,7 +62,7 @@ const Archive = () => {
 
     return (
         <div className="flex bg-gray-100 min-h-screen max-h-content">
-            <Sidebar />
+            <Sidebar onLogoutClick={() => setShowConfirmLogout(true)}/>
             <div className="flex-1 ml-[20rem]">
                 <Navbar />
 
@@ -84,7 +87,12 @@ const Archive = () => {
                     </motion.div>
                 </div>
 
-                {/* Restore Note Modal */}
+                {showConfirmLogout && (
+                    <ConfirmLogoutModal
+                        onCancel={() => setShowConfirmLogout(false)} // Handle cancellation
+                    />
+                )}
+
                 {selectedNote && (
                     <RestoreNoteModal
                         isOpen={isModalOpen}
