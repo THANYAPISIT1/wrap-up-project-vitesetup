@@ -1,13 +1,13 @@
 import { useState } from "react";
 
-const ConfirmationModal = ({ isOpen, onClose, onConfirm, selectedNotes }) => {
+const ConfirmationModal = ({ isOpen, onClose, onConfirm, selectedNotes, selectionLabel }) => {
   const [loading, setLoading] = useState(false); // Track loading state
 
   if (!isOpen) return null;
 
   const handleConfirmClick = async () => {
     setLoading(true); // Start loading
-    await onConfirm(selectedNotes); // Wait for the summary process to complete
+    await onConfirm(selectedNotes,selectionLabel); // Wait for the summary process to complete
     setLoading(false); // Stop loading
   };
 

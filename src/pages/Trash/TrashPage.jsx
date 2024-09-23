@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import axios from 'axios';
 import { motion } from "framer-motion";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 const Trash = () => {
     const [trashNotes, setTrashNotes] = useState([]);
@@ -14,7 +16,7 @@ const Trash = () => {
     useEffect(() => {
         const fetchTrashNotes = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/trash', {
+                const response = await axios.get(`${API_URL}/trash`, {
                     withCredentials: true, // Include cookies in the request
                 });
 
@@ -39,7 +41,7 @@ const Trash = () => {
 
     const handleRestore = async (NID) => {
         try {
-            await axios.put(`http://localhost:8000/note/default/${NID}`, 
+            await axios.put(`${API_URL}/note/default/${NID}`, 
                 {}, 
                 { withCredentials: true }
             );

@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import axios from 'axios';
 import { motion } from "framer-motion";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 const Archive = () => {
     const [notes, setNotes] = useState([]);
     const [selectedNote, setSelectedNote] = useState(null); 
@@ -14,7 +17,7 @@ const Archive = () => {
     useEffect(() => {
         const fetchNotes = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/archive/', {
+                const response = await axios.get(`${API_URL}/archive/`, {
                     withCredentials: true, 
                 });
 
@@ -45,7 +48,7 @@ const Archive = () => {
 
     const handleRestore = async (NID) => {
         try {
-            await axios.put(`http://localhost:8000/note/default/${NID}`, 
+            await axios.put(`${API_URL}/note/default/${NID}`, 
                 {}, 
                 { withCredentials: true }
             );

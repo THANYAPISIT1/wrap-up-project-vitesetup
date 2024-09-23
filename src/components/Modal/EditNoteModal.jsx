@@ -3,6 +3,8 @@ import axios from 'axios';
 import JoditEditor from 'jodit-react';
 import { BsSave2Fill } from 'react-icons/bs'; // Import the icon
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
     const [editableContent, setEditableContent] = useState(content);
     const [editableTitle, setEditableTitle] = useState(title);
@@ -17,7 +19,7 @@ const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
     const handleSave = async () => {
         try {
             const response = await axios.put(
-                `http://localhost:8000/note/${NID}`,
+                `${API_URL}/note/${NID}`,
                 { title: editableTitle, content: editableContent },
                 { withCredentials: true }
             );
@@ -37,7 +39,7 @@ const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
     const handleArchive = async () => {
         try {
             const response = await axios.put(
-                `http://localhost:8000/note/archive/${NID}`,
+                `${API_URL}/note/archive/${NID}`,
                 { status: 'archive' },
                 { withCredentials: true }
             );
@@ -57,7 +59,7 @@ const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
     const handleDelete = async () => {
         try {
             const response = await axios.put(
-                `http://localhost:8000/note/delete/${NID}`,
+                `${API_URL}/note/delete/${NID}`,
                 { status: 'deleted' },
                 { withCredentials: true }
             );

@@ -9,6 +9,8 @@ import JoditEditor from "jodit-react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Modal = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const editor = useRef(null);
@@ -62,7 +64,7 @@ const Modal = () => {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post('http://localhost:8000/note', {
+            const response = await axios.post(`${API_URL}/note`, {
                 title,
                 content,
                 label

@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     username: "",
@@ -23,7 +25,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8000/api/login", {
+      const response = await axios.post(`${API_URL}/api/login`, {
         username: formData.username,
         password: formData.password,
         rememberMe: formData.remember, // Include the rememberMe flag in the request

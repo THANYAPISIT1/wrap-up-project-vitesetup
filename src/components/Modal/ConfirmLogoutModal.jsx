@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const ConfirmLogoutModal = ({ onCancel}) => {
   const navigate = useNavigate();
 
@@ -8,7 +10,7 @@ const ConfirmLogoutModal = ({ onCancel}) => {
   const handleLogoutConfirm = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/logout",
+        `${API_URL}/api/logout`,
         { withCredentials: true }
       );
       // Optionally, you can handle the response message

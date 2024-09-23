@@ -11,8 +11,8 @@ import SummaryDetail from './pages/Summary/SummaryDetail'
 import MainRoutes from './pages/MainRoutes'
 import ProtectedRoute from './Auth/ProtectedRoute'
 
-const apiUrl = import.meta.env.VITE_API_URL;
-console.log('API URL:', apiUrl);
+const API_URL = import.meta.env.VITE_API_URL;
+console.log('API URL:', API_URL);
 
 function App() {
 

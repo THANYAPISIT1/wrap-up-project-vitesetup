@@ -9,6 +9,8 @@ const stripHTML = (html) => {
     return doc.body.textContent || "";
 };
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Summary = () => {
     const [summaries, setSummaries] = useState([]);
 
@@ -17,7 +19,7 @@ const Summary = () => {
     useEffect(() => {
         const fetchSummaryNotes = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/summary', {
+                const response = await axios.get(`${API_URL}/summary`, {
                     withCredentials: true, // Include cookies in the request
                 });
 

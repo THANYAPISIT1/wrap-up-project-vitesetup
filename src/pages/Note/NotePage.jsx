@@ -7,6 +7,8 @@ import { useState, useEffect } from "react";
 import axios from "axios"; // Import axios for making API requests
 import { motion,AnimatePresence } from "framer-motion";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const NotePage = () => {
   const [notes, setNotes] = useState([]);
   const [pinnedNotes, setPinnedNotes] = useState([]); // State for pinned notes
@@ -24,7 +26,7 @@ const NotePage = () => {
   const fetchNotes = async (labelToFilter = "") => {
     try {
 
-      const response = await axios.get("http://localhost:8000/note", {
+      const response = await axios.get(`${API_URL}/note`, {
         params: { filter, label: labelToFilter || label },
         withCredentials: true,
       });
@@ -72,13 +74,14 @@ const NotePage = () => {
   const handleNoteClick = (note) => {
     if (isSelectionMode) {
       if (selectedNotes.includes(note.NID)) {
-        setSelectionLabel(note.label);
         setSelectedNotes(selectedNotes.filter((id) => id !== note.NID));
+        if (selectedNotes.length === 1) {
+          setSelectionLabel(""); // Clear label if no notes are selected
+        }
       } else {
         setSelectedNotes([...selectedNotes, note.NID]);
-        setSelectionLabel(note.label);
-        // Detect first note selection and set the label for filtering
         if (selectedNotes.length === 0) {
+          setSelectionLabel(note.label); // Set label on first selection
           fetchNotes(note.label); // Fetch notes filtered by the first selected note's label
         }
 
@@ -87,6 +90,34 @@ const NotePage = () => {
     } else {
       setSelectedNote(note);
     }
+  };
+
+  const handleConfirmSummary = async (selectedNote) => {
+    try {
+      console.log(selectedNote,selectionLabel)
+      const response = await axios.post(
+        `${API_URL}/summarize`,
+        { NIDs: selectedNotes , promptType: selectionLabel },
+        { withCredentials: true }
+      );
+      alert(response.data.message);
+
+
+    } catch (error) {
+      console.error("Error generating summary:", error);
+      alert("Summary generation failed.");
+      setIsModalOpen(false); // Close the modal on failure
+    }
+    setIsSelectionMode(false); // Exit selection mode
+    setSelectedNotes([]);      // Clear selected notes
+    setSelectionLabel(null);   // Clear any label filtering used during selection
+    setIsModalOpen(false);     // Close the confirmation modal
+    fetchNotes();              // Fetch the notes again to refresh the UI
+  };
+
+  const noteVariants = {
+    hidden: { opacity: 0, y: 20 },  // Starts slightly below and transparent
+    visible: { opacity: 1, y: 0 },  // Moves up and becomes fully visible
   };
 
   const closeModal = () => {
@@ -110,7 +141,7 @@ const NotePage = () => {
       if (note.pin === 1) {
         // Unpin note
         await axios.put(
-          `http://localhost:8000/note/unpin/${note.NID}`,
+          `${API_URL}/note/unpin/${note.NID}`,
           {},
           { withCredentials: true }
         );
@@ -120,7 +151,7 @@ const NotePage = () => {
       } else {
         // Pin note
         await axios.put(
-          `http://localhost:8000/note/pin/${note.NID}`,
+          `${API_URL}/note/pin/${note.NID}`,
           {},
           { withCredentials: true }
         );
@@ -141,32 +172,7 @@ const NotePage = () => {
   console.log(selectedNotes, selectionLabel);
 
 
-  const handleConfirmSummary = async (selectedNotes,selectionLabel) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/summarize",
-        { NIDs: selectedNotes, promptType: selectionLabel },
-        { withCredentials: true }
-      );
-      alert(response.data.message);
 
-
-    } catch (error) {
-      console.error("Error generating summary:", error);
-      alert("Summary generation failed.");
-      setIsModalOpen(false); // Close the modal on failure
-    }
-    setIsSelectionMode(false); // Exit selection mode
-    setSelectedNotes([]);      // Clear selected notes
-    setSelectionLabel(null);   // Clear any label filtering used during selection
-    setIsModalOpen(false);     // Close the confirmation modal
-    fetchNotes();              // Fetch the notes again to refresh the UI
-  };
-
-  const noteVariants = {
-    hidden: { opacity: 0, y: 20 },  // Starts slightly below and transparent
-    visible: { opacity: 1, y: 0 },  // Moves up and becomes fully visible
-  };
   
 
   console.log(`Label is there selected`,selectionLabel)
