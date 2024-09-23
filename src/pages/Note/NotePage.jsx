@@ -1,10 +1,8 @@
-import Sidebar from "../../components/Sidebar";
 import Modal from "../../components/Modal/CreateNoteModal";
-import Navbar from "../../components/Navbar";
 import NotesList from "./NotesList";
 import NoteModal from "../../components/Modal/EditNoteModal";
 import ConfirmationModal from "../../components/Modal/ConfirmationModal"
-import ConfirmLogoutModal from "../../components/Modal/ConfirmLogoutModal";
+// import ConfirmLogoutModal from "../../components/Modal/ConfirmLogoutModal";
 import { useState, useEffect } from "react";
 import axios from "axios"; // Import axios for making API requests
 import { motion,AnimatePresence } from "framer-motion";
@@ -17,9 +15,9 @@ const NotePage = () => {
   const [label, setLabel] = useState("");
   const [isSelectionMode, setIsSelectionMode] = useState(false); // For selection mode
   const [selectedNotes, setSelectedNotes] = useState([]); // Track selected notes
-  const [selectionLabel, setSelectionLabel] = useState(null); 
+  const [selectionLabel, setSelectionLabel] = useState(""); 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showConfirmLogout, setShowConfirmLogout] = useState(false); 
+  // const [showConfirmLogout, setShowConfirmLogout] = useState(false); 
 
 
   // Fetch notes from API
@@ -60,7 +58,7 @@ const NotePage = () => {
       const pinned = sortedNotes.filter((note) => note.pin === 1);
       const unpinned = sortedNotes.filter((note) => note.pin !== 1);
 
-      setNotes(unpinned);
+      setNotes(unpinned); 
       setPinnedNotes(pinned);
     } catch (error) {
       console.error("Error fetching notes:", error.message);
@@ -74,6 +72,7 @@ const NotePage = () => {
   const handleNoteClick = (note) => {
     if (isSelectionMode) {
       if (selectedNotes.includes(note.NID)) {
+        setSelectionLabel(note.label);
         setSelectedNotes(selectedNotes.filter((id) => id !== note.NID));
       } else {
         setSelectedNotes([...selectedNotes, note.NID]);
@@ -139,17 +138,16 @@ const NotePage = () => {
     setIsModalOpen(true); // Open the confirmation modal
   };
 
+  console.log(selectedNotes, selectionLabel);
+
 
   const handleConfirmSummary = async (selectedNotes,selectionLabel) => {
     try {
       const response = await axios.post(
         "http://localhost:8000/summarize",
-        { NIDs : selectedNotes,
-          label: selectionLabel },
+        { NIDs: selectedNotes, promptType: selectionLabel },
         { withCredentials: true }
       );
-      console.log(`Note label for sum`,selectionLabel)
-
       alert(response.data.message);
 
 
@@ -164,15 +162,17 @@ const NotePage = () => {
     setIsModalOpen(false);     // Close the confirmation modal
     fetchNotes();              // Fetch the notes again to refresh the UI
   };
+
+  const noteVariants = {
+    hidden: { opacity: 0, y: 20 },  // Starts slightly below and transparent
+    visible: { opacity: 1, y: 0 },  // Moves up and becomes fully visible
+  };
   
 
   console.log(`Label is there selected`,selectionLabel)
 
   return (
-    <div className="flex bg-gray-100 min-h-screen max-h-full">
-      <Sidebar onLogoutClick={() => setShowConfirmLogout(true)} />
-      <div className="flex-1 ml-[20rem]">
-        <Navbar />
+      <div>
         <div className="flex justify-between m-4">
           {/* Filter and Label Dropdowns */}
           <div className="flex space-x-4">
@@ -223,9 +223,15 @@ const NotePage = () => {
             <div>
               <h2 className="text-2xl font-semibold mb-4">Pinned Notes ({pinnedNotes.length})</h2>
               <motion.div layout className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
-              <AnimatePresence>
-                {pinnedNotes.map((note) => (
-                  <motion.div key={note.NID} layoutId={`note-${note.NID}`}>
+                {pinnedNotes.map((note, index) => (
+                  <motion.div 
+                    key={note.NID} 
+                    layoutId={`note-${note.NID}`}
+                    variants={noteVariants} // Apply animation variants
+                    initial="hidden" 
+                    animate="visible"
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                  >
                     <NotesList
                       title={note.title}
                       content={note.content}
@@ -238,7 +244,6 @@ const NotePage = () => {
                     />
                   </motion.div>
                 ))}
-                </AnimatePresence>
               </motion.div>
             </div>
           )}
@@ -247,9 +252,15 @@ const NotePage = () => {
           <div>
             <h2 className="text-2xl font-semibold mb-4">All Notes ({notes.length})</h2>
             <motion.div layout className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
-              <AnimatePresence>
-              {notes.map((note) => (
-                <motion.div key={note.NID} layoutId={`note-${note.NID}`}>
+              {notes.map((note,index) => (
+                <motion.div 
+                  key={note.NID} 
+                  layoutId={`note-${note.NID}`}
+                  variants={noteVariants} // Apply animation variants
+                  initial="hidden" 
+                  animate="visible"
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
                   <NotesList
                     title={note.title}
                     content={note.content}
@@ -262,7 +273,6 @@ const NotePage = () => {
                   />
                 </motion.div>
               ))}
-              </AnimatePresence>
             </motion.div>
           </div>
 
@@ -303,21 +313,14 @@ const NotePage = () => {
           Select Notes for summary
         </button>
       )}
-
-        {showConfirmLogout && (
-          <ConfirmLogoutModal
-            onCancel={() => setShowConfirmLogout(false)} // Handle cancellation
-          />
-        )}
-      </div>
-
       <ConfirmationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirmSummary}
         selectedNotes={selectedNotes}
       />
-    </div>
+      </div>
+
   );
 };
 

@@ -16,10 +16,8 @@ const labelColors = {
   Diary: '#F77C7C',
 };
 
-const NotesList = ({ title, content,SID , label , dateUpdate, onClick, onPinClick, isPinned , isSelected}) => {
+const NotesList = ({ title, content , label , dateUpdate, onClick, onPinClick, isPinned , isSelected}) => {
   const location = useLocation(); // Get the current route
-
-  console.log([SID,label])
   return (
     <motion.div 
       animate={{opacity: 1}} 

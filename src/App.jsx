@@ -8,8 +8,8 @@ import Archive from './pages/Archive/ArchivePage'
 import Trash from './pages/Trash/TrashPage'
 import Summary from './pages/Summary/SummaryPage'
 import SummaryDetail from './pages/Summary/SummaryDetail'
-import Mainpage from './pages/Mainpage'
-
+import MainRoutes from './pages/MainRoutes'
+import ProtectedRoute from './Auth/ProtectedRoute'
 
 const apiUrl = import.meta.env.VITE_API_URL;
 console.log('API URL:', apiUrl);
@@ -22,16 +22,17 @@ function App() {
       <Routes>
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
-        {/* <Route element={<PrivateRoute />}> */}
+        <Route path='/' element={<MainRoutes/>}>
+
           <Route path='/' element={<Navigate to="/note" replace />}/>
-          <Route path="/note" element={<NotePage />} />
+          <Route path="/note" element={<ProtectedRoute><NotePage /></ProtectedRoute>} />
+          <Route path='/archive' element={<ProtectedRoute><Archive /></ProtectedRoute>} />
+          <Route path='/summary' element={<ProtectedRoute><Summary /></ProtectedRoute>} />
+          <Route path='/summary/:SID' element={<ProtectedRoute><SummaryDetail /></ProtectedRoute>} />
+          <Route path='/trash' element={<ProtectedRoute><Trash /></ProtectedRoute>} />
+          
           <Route path='test' element={<TestPage/>}/>
-          <Route path='/archive' element={<Archive/>} />
-          <Route path='/summary' element={<Summary/>} />
-          <Route path='/summary/:SID' element={<SummaryDetail/>} />
-          <Route path='/trash' element={<Trash/>} />
-          <Route path='/main' element={<Mainpage/>}></Route>
-        {/* </Route> */}
+        </Route>
       </Routes>
 
     </div>

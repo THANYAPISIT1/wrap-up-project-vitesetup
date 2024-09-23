@@ -1,8 +1,5 @@
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
 import NotesList from "../Note/NotesList";
 import RestoreNoteModal from "../../components/Modal/RestoreNoteModal";
-import ConfirmLogoutModal from "../../components/Modal/ConfirmLogoutModal";
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import { motion } from "framer-motion";
@@ -11,7 +8,6 @@ const Archive = () => {
     const [notes, setNotes] = useState([]);
     const [selectedNote, setSelectedNote] = useState(null); 
     const [isModalOpen, setIsModalOpen] = useState(false); 
-    const [showConfirmLogout, setShowConfirmLogout] = useState(false); 
 
 
     // Fetch notes from API when component mounts
@@ -59,48 +55,46 @@ const Archive = () => {
             console.error("Error restoring note:", error.message);
         }
     };
+    const listVariants = {
+        hidden: { opacity: 0, y: 20 },  // Start hidden and slightly below
+        visible: { opacity: 1, y: 0 },  // Move up and fade in
+      };
 
     return (
-        <div className="flex bg-gray-100 min-h-screen max-h-content">
-            <Sidebar onLogoutClick={() => setShowConfirmLogout(true)}/>
-            <div className="flex-1 ml-[20rem]">
-                <Navbar />
-
-                {/* -----------Content----------- */}
-
-                <div className="p-8">
-                    <div className="flex justify-between">
-                        <h1 className="text-3xl font-bold mb-6">Archived Notes ({notes.length})</h1>
-                    </div>
-                    <motion.div layout className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                        {notes.map((note, index) => (
-                            <motion.div key={note.NID} layoutId={`note-${note.NID}`}>
-                                <NotesList
-                                    key={index}
-                                    title={note.title}
-                                    content={note.content}
-                                    dateUpdate={note.date_update}
-                                    label={note.label}
-                                    onClick={() => handleNoteClick(note)} // Open modal on click
-                                />
-                            </motion.div>
-                        ))}
-                    </motion.div>
+        <div>
+            {/* -----------Content----------- */}
+            <div className="p-8">
+                <div className="flex justify-between">
+                    <h1 className="text-3xl font-bold mb-6">Archived Notes ({notes.length})</h1>
                 </div>
-
-                {showConfirmLogout && (
-                    <ConfirmLogoutModal
-                        onCancel={() => setShowConfirmLogout(false)} // Handle cancellation
-                    />
-                )}
-
+                <motion.div layout className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                    {notes.map((note, index) => (
+                        <motion.div 
+                            key={note.NID} 
+                            layoutId={`note-${note.NID}`}
+                            variants={listVariants}
+                            initial="hidden"
+                            animate="visible"
+                            transition={{ duration: 0.5, delay: index * 0.1 }} 
+                        >
+                            <NotesList
+                                key={index}
+                                title={note.title}
+                                content={note.content}
+                                dateUpdate={note.date_update}
+                                label={note.label}
+                                onClick={() => handleNoteClick(note)} 
+                            />
+                        </motion.div>
+                    ))}
+                </motion.div>
                 {selectedNote && (
-                    <RestoreNoteModal
-                        isOpen={isModalOpen}
-                        onClose={closeModal}
-                        onRestore={handleRestore}
-                        note={selectedNote}
-                    />
+                <RestoreNoteModal
+                    isOpen={isModalOpen}
+                    onClose={closeModal}
+                    onRestore={handleRestore}
+                    note={selectedNote}
+                />
                 )}
             </div>
         </div>
