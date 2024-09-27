@@ -11,6 +11,7 @@ const ConfirmLogoutModal = ({ onCancel}) => {
     try {
       const response = await axios.post(
         `${API_URL}/api/logout`,
+        {},
         { withCredentials: true }
       );
       // Optionally, you can handle the response message

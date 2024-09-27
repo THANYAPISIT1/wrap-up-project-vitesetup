@@ -1,15 +1,14 @@
-import './App.css'
 import { Routes,Route,Navigate } from 'react-router-dom'
-import LoginPage from './pages/LoginRegister/LoginPage'
 import NotePage from './pages/Note/NotePage'
-import RegisterPage from './pages/LoginRegister/RegisterPage'
-import TestPage from './TestPage'
+import TestPage from './Test/TestPage'
 import Archive from './pages/Archive/ArchivePage'
 import Trash from './pages/Trash/TrashPage'
 import Summary from './pages/Summary/SummaryPage'
 import SummaryDetail from './pages/Summary/SummaryDetail'
 import MainRoutes from './pages/MainRoutes'
 import ProtectedRoute from './Auth/ProtectedRoute'
+import NotFoundPage from './pages/NotFoundPage'
+import LoginPage from './pages/LoginRegister/LoginPage'
 
 const API_URL = import.meta.env.VITE_API_URL;
 console.log('API URL:', API_URL);
@@ -21,7 +20,7 @@ function App() {
     <div>
       <Routes>
         <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
+        <Route path="register" element={<TestPage />} />
         <Route path='/' element={<MainRoutes/>}>
 
           <Route path='/' element={<Navigate to="/note" replace />}/>
@@ -31,8 +30,10 @@ function App() {
           <Route path='/summary/:SID' element={<ProtectedRoute><SummaryDetail /></ProtectedRoute>} />
           <Route path='/trash' element={<ProtectedRoute><Trash /></ProtectedRoute>} />
           
-          <Route path='test' element={<TestPage/>}/>
         </Route>
+        <Route path="*" element={<Navigate to="/pagenotfound" replace />} />
+        <Route path="/pagenotfound" element={<NotFoundPage/>}/>
+        <Route path='test' element={<TestPage/>}/>
       </Routes>
 
     </div>

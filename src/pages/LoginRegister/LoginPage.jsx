@@ -101,7 +101,7 @@ const LoginPage = () => {
           </button>
         </form>
         {message && (
-          <p className="mt-4 text-center text-red-500">{message}</p>
+          <p className="mt-4 text-center text-green-500">{message}</p>
         )}
         <div className="mt-6 text-blue-500 text-center">
           <Link to={'/register'}>
