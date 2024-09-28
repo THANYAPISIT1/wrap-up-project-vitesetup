@@ -2,10 +2,9 @@ import NotesList from "../Note/NotesList";
 import RestoreNoteModal from "../../components/Modal/RestoreNoteModal";
 import { useState, useEffect } from "react";
 import axios from 'axios';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const API_URL = import.meta.env.VITE_API_URL;
-
 
 const Trash = () => {
     const [trashNotes, setTrashNotes] = useState([]);
@@ -51,37 +50,41 @@ const Trash = () => {
             console.error("Error restoring note:", error.message);
         }
     };
-    const noteVariants = {
-        hidden: { opacity: 0, y: 20 },  // Starts slightly below and transparent
-        visible: { opacity: 1, y: 0 },  // Moves up and becomes fully visible
-      };
+
+    const listVariants = {
+        hidden: { opacity: 0, y: 20 },  // Start hidden and slightly below
+        visible: { opacity: 1, y: 0 },  // Move up and fade in
+        exit: { opacity: 0, y: 20 }     // Move down and fade out
+    };
 
     return (
         <div className="p-8">
             <div className="flex justify-between">
                 <h1 className="text-3xl font-bold mb-6">Trash ({trashNotes.length})</h1>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                {trashNotes.map((note, index) => (
-                    <motion.div 
-                        key={note.NID} 
-                        layoutId={`note-${note.NID}`}
-                        variants={noteVariants} // Apply animation variants
-                        initial="hidden" 
-                        animate="visible"
-                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                    >
-                        <NotesList
-                            key={index}
-                            title={note.title}
-                            content={note.content}
-                            dateUpdate={note.date_update} 
-                            label={note.label}
-                            onClick={() => handleNoteClick(note)} 
-                        />
-                    </motion.div>
-                ))}
-            </div>
+            <motion.div layout className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                <AnimatePresence>
+                    {trashNotes.map((note) => (
+                        <motion.div 
+                            key={note.NID} 
+                            layoutId={`note-${note.NID}`}
+                            variants={listVariants}
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                        >
+                            <NotesList
+                                key={note.NID}
+                                title={note.title}
+                                content={note.content}
+                                dateUpdate={note.date_update} 
+                                label={note.label}
+                                onClick={() => handleNoteClick(note)} 
+                            />
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+            </motion.div>
             {selectedNote && (
                 <RestoreNoteModal
                     isOpen={isModalOpen}

@@ -63,15 +63,6 @@ form.sign-in-form {
     margin: 10px 0;
   }
   
-  .form input {
-    width: 100%;
-    height: 100%;
-    color: rgb(66, 66, 66);
-    padding-top: 20px;
-    border: none;
-    outline: none;
-  }
-  
   /* Default Label and Underline */
   .label-name {
     position: absolute;
@@ -111,7 +102,15 @@ form.sign-in-form {
     font-size: 14px;
     color: #3272f2; /* Active label color */
   }
-  
+  .form input:not(:focus):not(:placeholder-shown) + .label-name .content-name {
+    font-size: 14px;
+    color: rgb(66, 66, 66); /* Base color when text is present but not focused */
+  }
+
+  .form input:not(:focus):not(:placeholder-shown) + .label-name::after {
+    border-bottom: 1px solid rgb(66, 66, 66); /* Base underline color */
+    transform: translateX(-100%); /* Keep underline visible but base color */
+  }
   /* Active underline when focused or valid */
   .form input:focus + .label-name::after,
   .form input:valid + .label-name::after {
@@ -122,39 +121,20 @@ form.sign-in-form {
   .form input:not(:focus):placeholder-shown + .label-name .content-name {
     transform: translateY(0);
     font-size: 16px;
-    color: rgb(66, 66, 66); /* Reset to default color */
+    color: rgb(66, 66, 66);
   }
   
   .form input:not(:focus):placeholder-shown + .label-name::after {
     transform: translateX(-100%); /* Hide active underline */
   }
-  
-
-
-.social-media {
-  display: flex;
-  justify-content: center;
-}
-
-.social-icon {
-  height: 46px;
-  width: 46px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 0.45rem;
-  color: #333;
-  border-radius: 50%;
-  border: 1px solid #333;
-  text-decoration: none;
-  font-size: 1.1rem;
-  transition: 0.3s;
-}
-
-.social-icon:hover {
-  color: #4481eb;
-  border-color: #4481eb;
-}
+  .form input {
+    width: 100%;
+    height: 100%;
+    color: rgb(66, 66, 66);
+    padding-top: 20px;
+    border: none;
+    outline: none;
+  }
 
 .btn {
   width: 150px;
@@ -166,7 +146,7 @@ form.sign-in-form {
   color: #fff;
   text-transform: uppercase;
   font-weight: 600;
-  margin: 10px 0;
+  margin: 25px 0;
   cursor: pointer;
   transition: 0.5s;
 }

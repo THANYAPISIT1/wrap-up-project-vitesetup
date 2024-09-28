@@ -15,7 +15,7 @@ const Sidebar = ({ onLogoutClick }) => {
 
 
   return (
-    <div className="fixed top-0 left-0 h-full flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
+    <div className="fixed top-0 left-0 h-full flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 z-10">
       <div className="mb-2 p-4">
         <Link to={'/'}>
           <h5 className="block antialiased tracking-normal font-sans text-xl font-semibold leading-snug text-gray-900">

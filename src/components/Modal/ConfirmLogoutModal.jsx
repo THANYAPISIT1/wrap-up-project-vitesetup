@@ -24,7 +24,7 @@ const ConfirmLogoutModal = ({ onCancel}) => {
     }
   };
   return (
-    <div className="fixed flex justify-center items-center inset-0 z-100 bg-gray-800 bg-opacity-50">
+    <div className="fixed flex justify-center items-center inset-0 z-20 bg-gray-800 bg-opacity-50">
       <div className="bg-white rounded-lg p-6">
         <h3 className="text-lg font-semibold mb-4">Confirm Logout</h3>
         <p className="mb-4">Are you sure you want to log out?</p>

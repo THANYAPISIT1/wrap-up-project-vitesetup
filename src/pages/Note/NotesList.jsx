@@ -76,7 +76,7 @@ const NotesList = ({ title, content , label , dateUpdate, onClick, onPinClick, i
         </p>
       </div>
       <div className="absolute bottom-2 right-2 text-sm text-gray-500 mt-2 self-end">
-        {new Date(dateUpdate).toLocaleDateString()} {/* Format date as needed */}
+        {new Date(dateUpdate).toLocaleDateString()} 
       </div>
     </motion.div>
   );

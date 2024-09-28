@@ -2,10 +2,10 @@ import Modal from "../../components/Modal/CreateNoteModal";
 import NotesList from "./NotesList";
 import NoteModal from "../../components/Modal/EditNoteModal";
 import ConfirmationModal from "../../components/Modal/ConfirmationModal"
-// import ConfirmLogoutModal from "../../components/Modal/ConfirmLogoutModal";
+import FilterLabelDropdowns from "../../components/FilterLabelDropdowns";
 import { useState, useEffect } from "react";
 import axios from "axios"; // Import axios for making API requests
-import { motion,AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -19,13 +19,10 @@ const NotePage = () => {
   const [selectedNotes, setSelectedNotes] = useState([]); // Track selected notes
   const [selectionLabel, setSelectionLabel] = useState(""); 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [showConfirmLogout, setShowConfirmLogout] = useState(false); 
-
 
   // Fetch notes from API
   const fetchNotes = async (labelToFilter = "") => {
     try {
-
       const response = await axios.get(`${API_URL}/note`, {
         params: { filter, label: labelToFilter || label },
         withCredentials: true,
@@ -74,9 +71,11 @@ const NotePage = () => {
   const handleNoteClick = (note) => {
     if (isSelectionMode) {
       if (selectedNotes.includes(note.NID)) {
-        setSelectedNotes(selectedNotes.filter((id) => id !== note.NID));
-        if (selectedNotes.length === 1) {
+        const newSelectedNotes = selectedNotes.filter((id) => id !== note.NID);
+        setSelectedNotes(newSelectedNotes);
+        if (newSelectedNotes.length === 0) {
           setSelectionLabel(""); // Clear label if no notes are selected
+          fetchNotes(); // Fetch all notes when no notes are selected
         }
       } else {
         setSelectedNotes([...selectedNotes, note.NID]);
@@ -84,9 +83,8 @@ const NotePage = () => {
           setSelectionLabel(note.label); // Set label on first selection
           fetchNotes(note.label); // Fetch notes filtered by the first selected note's label
         }
-
-        console.log(`Note selected:`, [...selectedNotes, note.NID]);
       }
+      console.log(`Selected notes:`, selectedNotes);
     } else {
       setSelectedNote(note);
     }
@@ -101,8 +99,6 @@ const NotePage = () => {
         { withCredentials: true }
       );
       alert(response.data.message);
-
-
     } catch (error) {
       console.error("Error generating summary:", error);
       alert("Summary generation failed.");
@@ -115,9 +111,10 @@ const NotePage = () => {
     fetchNotes();              // Fetch the notes again to refresh the UI
   };
 
-  const noteVariants = {
-    hidden: { opacity: 0, y: 20 },  // Starts slightly below and transparent
-    visible: { opacity: 1, y: 0 },  // Moves up and becomes fully visible
+  const listVariants = {
+    hidden: { opacity: 0, y: 20 },  // Start hidden and slightly below
+    visible: { opacity: 1, y: 0 },  // Move up and fade in
+    exit: { opacity: 0, y: 20 }     // Move down and fade out
   };
 
   const closeModal = () => {
@@ -145,8 +142,7 @@ const NotePage = () => {
           {},
           { withCredentials: true }
         );
-        note.pin = 0;
-        setPinnedNotes(pinnedNotes.filter((pn) => pn.NID !== note.NID));
+        setPinnedNotes(pinnedNotes.filter((n) => n.NID !== note.NID));
         setNotes([...notes, note]);
       } else {
         // Pin note
@@ -155,7 +151,6 @@ const NotePage = () => {
           {},
           { withCredentials: true }
         );
-        note.pin = 1;
         setNotes(notes.filter((n) => n.NID !== note.NID));
         setPinnedNotes([...pinnedNotes, note]);
       }
@@ -170,51 +165,18 @@ const NotePage = () => {
   };
 
   console.log(selectedNotes, selectionLabel);
-
-
-
-  
-
   console.log(`Label is there selected`,selectionLabel)
 
   return (
       <div>
         <div className="flex justify-between m-4">
           {/* Filter and Label Dropdowns */}
-          <div className="flex space-x-4">
-            <div>
-              <label htmlFor="filter" className="mr-2">
-                Sort By:
-              </label>
-              <select
-                id="filter"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="border border-gray-300 rounded-md py-2 px-3"
-              >
-                <option value="title">Title</option>
-                <option value="date create">Date Created</option>
-                <option value="last update">Last Updated</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="label" className="mr-2">
-                Label:
-              </label>
-              <select
-                id="label"
-                value={label}
-                onChange={(e) => setLabel(e.target.value)}
-                className="border border-gray-300 rounded-md py-2 px-3"
-              >
-                <option value="">All</option>
-                <option value="study">Study</option>
-                <option value="health">Health</option>
-                <option value="finance">Finance</option>
-                <option value="diary">Diary</option>
-              </select>
-            </div>
-          </div>
+          <FilterLabelDropdowns
+            filter={filter}
+            setFilter={setFilter}
+            label={label}
+            setLabel={setLabel}
+          />
           <Modal/> 
         </div>
         <hr />
@@ -229,14 +191,46 @@ const NotePage = () => {
             <div>
               <h2 className="text-2xl font-semibold mb-4">Pinned Notes ({pinnedNotes.length})</h2>
               <motion.div layout className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
-                {pinnedNotes.map((note, index) => (
+                <AnimatePresence>
+                  {pinnedNotes.map((note) => (
+                    <motion.div 
+                      key={note.NID} 
+                      layoutId={`note-${note.NID}`}
+                      variants={listVariants} // Apply animation variants
+                      initial="hidden" 
+                      animate="visible"
+                      exit="exit"
+                    >
+                      <NotesList
+                        title={note.title}
+                        content={note.content}
+                        onClick={() => handleNoteClick(note)}
+                        onPinClick={() => handlePinClick(note)}
+                        dateUpdate={note.date_update}
+                        isPinned={note.pin === 1}
+                        isSelected={selectedNotes.includes(note.NID)} // Pass selection state
+                        label={note.label}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            </div>
+          )}
+
+          {/* Unpinned Notes Section */}
+          <div>
+            <h2 className="text-2xl font-semibold mb-4">All Notes ({notes.length})</h2>
+            <motion.div layout className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
+              <AnimatePresence>
+                {notes.map((note) => (
                   <motion.div 
                     key={note.NID} 
                     layoutId={`note-${note.NID}`}
-                    variants={noteVariants} // Apply animation variants
+                    variants={listVariants} // Apply animation variants
                     initial="hidden" 
                     animate="visible"
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    exit="exit"
                   >
                     <NotesList
                       title={note.title}
@@ -250,35 +244,7 @@ const NotePage = () => {
                     />
                   </motion.div>
                 ))}
-              </motion.div>
-            </div>
-          )}
-
-          {/* Unpinned Notes Section */}
-          <div>
-            <h2 className="text-2xl font-semibold mb-4">All Notes ({notes.length})</h2>
-            <motion.div layout className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
-              {notes.map((note,index) => (
-                <motion.div 
-                  key={note.NID} 
-                  layoutId={`note-${note.NID}`}
-                  variants={noteVariants} // Apply animation variants
-                  initial="hidden" 
-                  animate="visible"
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <NotesList
-                    title={note.title}
-                    content={note.content}
-                    onClick={() => handleNoteClick(note)}
-                    onPinClick={() => handlePinClick(note)}
-                    dateUpdate={note.date_update}
-                    isPinned={note.pin === 1}
-                    isSelected={selectedNotes.includes(note.NID)} // Pass selection state
-                    label={note.label}
-                  />
-                </motion.div>
-              ))}
+              </AnimatePresence>
             </motion.div>
           </div>
 
@@ -326,7 +292,6 @@ const NotePage = () => {
         selectedNotes={selectedNotes}
       />
       </div>
-
   );
 };
 

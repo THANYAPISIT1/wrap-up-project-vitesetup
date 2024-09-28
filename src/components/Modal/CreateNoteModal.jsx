@@ -16,7 +16,7 @@ const Modal = () => {
     const editor = useRef(null);
     const [content, setContent] = useState('');
     const [title, setTitle] = useState('');
-    const [label, setLabel] = useState('');
+    const [label, setLabel] = useState('Diary');
     const navigate = useNavigate();
 
     const modalHandler = (val) => {
@@ -109,18 +109,18 @@ const Modal = () => {
                         />
                             <div className="flex justify-center w-full max-w-fit mb-2">
                                 <button 
+                                    className={`w-fit px-2 py-1 h-8 ${label === 'Diary' ? 'bg-[#F77C7C]' : 'bg-gray-400'} flex items-center justify-center rounded-lg m-1 font-bold text-white`}
+                                    onClick={() => handleLabelClick('Diary')}
+                                >
+                                    <FaPencilAlt />
+                                    <p className="ml-1">Diary</p>
+                                </button>
+                                <button 
                                     className={`w-fit px-2 py-1 h-8 ${label === 'Study' ? 'bg-[#8684FB]' : 'bg-gray-400'} flex items-center justify-center rounded-lg m-1 font-bold text-white`}
                                     onClick={() => handleLabelClick('Study')}
                                 >
                                     <FaBook />
                                     <p className="ml-1">Study</p>
-                                </button>
-                                <button 
-                                    className={`w-fit px-2 py-1 h-8 ${label === 'Hobby' ? 'bg-[#A47EE3]' : 'bg-gray-400'} flex items-center justify-center rounded-lg m-1 font-bold text-white`}
-                                    onClick={() => handleLabelClick('Hobby')}
-                                >
-                                    <BiSolidJoystick />
-                                    <p className="ml-1">Hobby</p>
                                 </button>
                                 <button 
                                     className={`w-fit px-2 py-1 h-8 ${label === 'Health' ? 'bg-[#48EA58]' : 'bg-gray-400'} flex items-center justify-center rounded-lg m-1 font-bold text-white`}
@@ -135,13 +135,6 @@ const Modal = () => {
                                 >
                                     <FaMoneyBill />
                                     <p className="ml-1">Finance</p>
-                                </button>
-                                <button 
-                                    className={`w-fit px-2 py-1 h-8 ${label === 'Diary' ? 'bg-[#F77C7C]' : 'bg-gray-400'} flex items-center justify-center rounded-lg m-1 font-bold text-white`}
-                                    onClick={() => handleLabelClick('Diary')}
-                                >
-                                    <FaPencilAlt />
-                                    <p className="ml-1">Diary</p>
                                 </button>
                             </div>
                         <label htmlFor="detail" className="text-gray-800 text-sm font-bold leading-tight tracking-normal">Detail</label>

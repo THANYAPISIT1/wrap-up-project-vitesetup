@@ -5,7 +5,7 @@ import { BsSave2Fill } from 'react-icons/bs'; // Import the icon
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
+const NoteModal = ({ isOpen, onClose, title, content, NID, onSave, status }) => {
     const [editableContent, setEditableContent] = useState(content);
     const [editableTitle, setEditableTitle] = useState(title);
     const [showConfirm, setShowConfirm] = useState(false);
@@ -53,6 +53,26 @@ const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
             onClose();
         } catch (error) {
             console.error("Error archiving note:", error.message);
+        }
+    };
+
+    const handleUnarchive = async () => {
+        try {
+            const response = await axios.put(
+                `${API_URL}/note/default/${NID}`,
+                { status: 'default' },
+                { withCredentials: true }
+            );
+
+            if (response.data.message === "Note unarchived successfully!!") {
+                onSave(); // Notify parent component to refresh notes
+            } else {
+                console.log(response.data.message);
+            }
+            onSave();
+            onClose();
+        } catch (error) {
+            console.error("Error unarchiving note:", error.message);
         }
     };
 
@@ -128,12 +148,21 @@ const NoteModal = ({ isOpen, onClose, title, content, NID, onSave }) => {
                     >
                         Cancel
                     </button>
-                    <button
-                        onClick={handleArchive} // Archive button handler
-                        className="px-4 py-2 bg-green-500 text-white rounded-md flex items-center hover:bg-green-700"
-                    >
-                        <BsSave2Fill className="mr-2" /> Archive
-                    </button>
+                    {status === 'archive' ? (
+                        <button
+                            onClick={handleUnarchive} // Unarchive button handler
+                            className="px-4 py-2 bg-green-500 transition-all duration-300 text-white rounded-md flex items-center hover:bg-green-700"
+                        >
+                            <BsSave2Fill className="mr-2" /> Unarchive
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleArchive} // Archive button handler
+                            className="px-4 py-2 bg-green-500 transition-all duration-300 text-white rounded-md flex items-center hover:bg-green-700"
+                        >
+                            <BsSave2Fill className="mr-2" /> Archive
+                        </button>
+                    )}
                     <button
                         onClick={handleSave}
                         className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
