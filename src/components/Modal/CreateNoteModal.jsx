@@ -11,7 +11,7 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const Modal = () => {
+const CreateNoteModal = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const editor = useRef(null);
     const [content, setContent] = useState('');
@@ -63,6 +63,13 @@ const Modal = () => {
     };
 
     const handleSubmit = async () => {
+        const strippedContent = content.replace(/<[^>]*>?/gm, ''); // Remove HTML tags
+
+        if (!strippedContent.trim()) {
+            alert("The note's content cannot be empty.");
+            return;
+        }
+
         try {
             const response = await axios.post(`${API_URL}/note`, {
                 title,
@@ -84,7 +91,7 @@ const Modal = () => {
     return (
         <div>
             <div
-                className={`py-12 bg-black bg-opacity-50 transition duration-150 ease-in-out z-10 fixed inset-0 ${
+                className={`py-12 bg-black bg-opacity-50 transition duration-150 ease-in-out z-20 fixed inset-0 ${
                     modalOpen ? 'flex' : 'hidden'
                 }`}
                 id="modal"
@@ -107,6 +114,9 @@ const Modal = () => {
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                         />
+                            <p className="text-gray-600 text-xs italic mt-1 mb-2">
+                                <span className="text-red-500">Tip : </span>Selecting a label can improve the summarization of your notes.
+                            </p>
                             <div className="flex justify-center w-full max-w-fit mb-2">
                                 <button 
                                     className={`w-fit px-2 py-1 h-8 ${label === 'Diary' ? 'bg-[#F77C7C]' : 'bg-gray-400'} flex items-center justify-center rounded-lg m-1 font-bold text-white`}
@@ -137,6 +147,7 @@ const Modal = () => {
                                     <p className="ml-1">Finance</p>
                                 </button>
                             </div>
+
                         <label htmlFor="detail" className="text-gray-800 text-sm font-bold leading-tight tracking-normal">Detail</label>
                         <div className="relative mb-5 mt-2">
                             <div className="absolute right-0 text-gray-600 flex items-center pr-3 h-full cursor-pointer">
@@ -149,6 +160,7 @@ const Modal = () => {
                                         height: 400,
                                         width: '100%',
                                         theme: 'default',
+                                        removeButtons: ['image', 'video', 'file', 'speechRecognize', 'spellcheck']
                                     }}
                                     className="h-[400px] w-full"
                                 />
@@ -179,12 +191,20 @@ const Modal = () => {
                 </div>
             </div>
 
-            {/* Open modal */}
+            {/* ANCHOR - Create Note Button */}
             <div className="w-full" id="button">
-                <button className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 mx-auto ease-in-out hover:bg-indigo-600 bg-indigo-700 rounded-3xl text-white px-2 sm:px-8 py-2 text-xs text-bold sm:text-sm hover:text-bold transition-all duration-300 flex items-center" onClick={() => modalHandler(true)}><TiPlus className='mr-1'/>Create</button>
+                <button 
+                    className="group flex h-10 items-center gap-2 rounded-full bg-neutral-200 pl-3 pr-4 transition-all duration-300 ease-in-out hover:bg-blue-600 hover:pl-2 hover:text-white active:bg-neutral-700"
+                    onClick={() => modalHandler(true)}
+                >
+                    <span className="rounded-full bg-black p-1 text-sm transition-colors duration-300 group-hover:bg-white">
+                        <TiPlus className="-translate-x-[200%] text-[0px] transition-all duration-300 group-hover:translate-x-0 group-hover:text-lg group-hover:text-blue-600 group-active:-rotate-45" />
+                    </span>
+                    <span>Create Note</span>
+                </button>
             </div>
         </div>
     );
   };
  
-export default Modal;
+export default CreateNoteModal;

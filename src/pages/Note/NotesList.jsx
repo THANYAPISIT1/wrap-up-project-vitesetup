@@ -16,15 +16,16 @@ const labelColors = {
   Diary: '#F77C7C',
 };
 
-const NotesList = ({ title, content , label , dateUpdate, onClick, onPinClick, isPinned , isSelected}) => {
+const NotesList = ({ title, content, label, dateUpdate, onClick, onPinClick, isPinned, isSelected, daysLeft }) => {
   const location = useLocation(); // Get the current route
+  console.log(daysLeft)
   return (
     <motion.div 
       animate={{opacity: 1}} 
       initial={{opacity: 0}}
       exit={{opacity: 0}}
-      layout
-      className={`relative p-4 rounded-lg shadow-md cursor-pointer h-48 justify-between hover:scale-105 transition-all duration-300 group ${isSelected ? 'bg-blue-200' : 'bg-white' }`}
+      transition={{ duration: 0.3 }} // Add a custom transition
+      className={`relative p-4 rounded-lg shadow-md cursor-pointer h-48 flex flex-col justify-between hover:scale-105 transition-all duration-300 group ${isSelected ? 'bg-blue-200' : 'bg-white' }`}
       onClick={onClick}
     >
       <div
@@ -52,13 +53,13 @@ const NotesList = ({ title, content , label , dateUpdate, onClick, onPinClick, i
         </div>
       )}
 
-      <div>
+      <div className="flex-grow overflow-hidden">
         <h2
           className="text-xl font-bold mb-2 overflow-hidden text-ellipsis"
           style={{
             display: "-webkit-box",
             WebkitBoxOrient: "vertical",
-            WebkitLineClamp: 2, // Limit title to 2 lines
+            WebkitLineClamp: 1,
             whiteSpace: "normal",
           }}
         >
@@ -75,8 +76,12 @@ const NotesList = ({ title, content , label , dateUpdate, onClick, onPinClick, i
           {stripHTML(content)}
         </p>
       </div>
-      <div className="absolute bottom-2 right-2 text-sm text-gray-500 mt-2 self-end">
-        {new Date(dateUpdate).toLocaleDateString()} 
+      <div className="text-sm text-gray-500 mt-2 self-end">
+        {location.pathname === "/trash" ? (
+          `${daysLeft} days left`
+        ) : (
+          new Date(dateUpdate).toLocaleDateString()
+        )}
       </div>
     </motion.div>
   );

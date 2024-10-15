@@ -25,7 +25,7 @@ const LoginRegis = () => {
     password: "",
     confirmPassword: "", // Used only for registration
   });
-
+  //ANCHOR - LOGIN API
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -39,9 +39,8 @@ const LoginRegis = () => {
       setMessage(response.data.message);
 
       if (response.status === 200) {
-        // Redirect after successful login
         setTimeout(() => {
-          navigate('/'); // Change to your desired route after login
+          navigate('/'); 
         }, 1000); 
       }
     } catch (error) {
@@ -59,7 +58,7 @@ const LoginRegis = () => {
       confirmPassword: "",
     });
   };
-
+  //ANCHOR - REGIS API
   const handleRegis = async (e) => {
     e.preventDefault();
     let validationErrors = {};
@@ -145,9 +144,10 @@ const LoginRegis = () => {
     <div className={`${styles.container} ${isSignUpMode ? styles["sign-up-mode"] : ""}`}>
       <div className={styles["forms-container"]}>
         <div className={styles["signin-signup"]}>
-          {/* Sign In Form */}
+          {/*ANCHOR Login Form */}
           <form className={styles["sign-in-form"]} onSubmit={handleLogin}>
-            <h2 className={styles.title}>Sign in</h2>
+            <img src="/src/assets/LogoV2.png" alt="Logo" className="h-24 w-auto mb-4" />
+            <h2 className={styles.title}>Login</h2>
             <div className={styles.form}>
               <input
                 type="text"
@@ -191,9 +191,10 @@ const LoginRegis = () => {
           </form>
 
 
-          {/* Sign Up Form */}
+          {/*ANCHOR Register Form */}
           <form className={styles["sign-up-form"]} onSubmit={handleRegis}>
-            <h2 className={styles.title}>Sign up</h2>
+            <img src="/src/assets/LogoV2.png" alt="Logo" className="h-24 w-auto mb-4" />
+            <h2 className={styles.title}>Register</h2>
             <div className={styles.form}>
               <input
                 type="text"
@@ -252,7 +253,7 @@ const LoginRegis = () => {
             {errors.confirmPassword && <p className="text-red-500">{errors.confirmPassword}</p>}
 
             {/* Submit Button */}
-            <input type="submit" value="Sign up" className={styles.btn} />
+            <input type="submit" value="Register" className={styles.btn} />
             {errors.apiError && <p className="text-red-500">{errors.apiError}</p>}
             {successMessage && <p className="text-green-500">{successMessage}</p>}
           </form>
@@ -266,7 +267,7 @@ const LoginRegis = () => {
             <h3>New here?</h3>
             <p>Join us to access exclusive content and tools tailored just for you.</p>
             <button className={`${styles.btn} ${styles.transparent}`} onClick={handleSignUpClick}>
-              Sign up
+              Register
             </button>
           </div>
           <img src="https://raw.githubusercontent.com/sefyudem/Sliding-Sign-In-Sign-Up-Form/refs/heads/master/img/log.svg" className={styles.image} alt="" />
@@ -275,9 +276,9 @@ const LoginRegis = () => {
         <div className={`${styles.panel} ${styles["right-panel"]}`}>
           <div className={styles.content}>
             <h3>Already one of us?</h3>
-            <p>Sign in to continue exploring all the exciting features you’ve come to love.</p>
+            <p>Login to continue exploring all the exciting features you’ve come to love.</p>
             <button className={`${styles.btn} ${styles.transparent}`} onClick={handleSignInClick}>
-              Sign in
+              Login
             </button>
           </div>
           <img src="https://raw.githubusercontent.com/sefyudem/Sliding-Sign-In-Sign-Up-Form/refs/heads/master/img/register.svg" className={styles.image} alt="" />

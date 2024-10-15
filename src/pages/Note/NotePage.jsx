@@ -1,15 +1,18 @@
-import Modal from "../../components/Modal/CreateNoteModal";
+import CreateNoteModal from "../../components/Modal/CreateNoteModal";
 import NotesList from "./NotesList";
-import NoteModal from "../../components/Modal/EditNoteModal";
+import EditNoteModal from "../../components/Modal/EditNoteModal";
 import ConfirmationModal from "../../components/Modal/ConfirmationModal"
 import FilterLabelDropdowns from "../../components/FilterLabelDropdowns";
 import { useState, useEffect } from "react";
 import axios from "axios"; // Import axios for making API requests
 import { motion, AnimatePresence } from "framer-motion";
+// import InfiniteScroll from 'react-infinite-scroll-component';
+import { useOutletContext } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const NotePage = () => {
+  const { searchQuery } = useOutletContext();
   const [notes, setNotes] = useState([]);
   const [pinnedNotes, setPinnedNotes] = useState([]); // State for pinned notes
   const [selectedNote, setSelectedNote] = useState(null);
@@ -19,8 +22,10 @@ const NotePage = () => {
   const [selectedNotes, setSelectedNotes] = useState([]); // Track selected notes
   const [selectionLabel, setSelectionLabel] = useState(""); 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [summarySID, setSummarySID] = useState(null); // State to store SID
+  const [isSummaryCompleted, setIsSummaryCompleted] = useState(false); // Add this new state for tracking if summary is completed
 
-  // Fetch notes from API
+  //ANCHOR - fetchNotesAPI(NotePage)
   const fetchNotes = async (labelToFilter = "") => {
     try {
       const response = await axios.get(`${API_URL}/note`, {
@@ -37,6 +42,15 @@ const NotePage = () => {
         activeNotes = activeNotes.filter(
           (note) =>
             note.label && note.label.toLowerCase() === (labelToFilter || label).toLowerCase()
+        );
+      }
+
+      // Apply search filtering
+      if (searchQuery) {
+        activeNotes = activeNotes.filter(
+          (note) =>
+            note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            note.content.toLowerCase().includes(searchQuery.toLowerCase())
         );
       }
 
@@ -66,8 +80,9 @@ const NotePage = () => {
 
   useEffect(() => {
     fetchNotes(); // Fetch notes when the component is mounted or filter/label changes
-  }, [filter, label]);
+  }, [filter, label, searchQuery]);
 
+  //ANCHOR - handleNoteClick(NotePage)  
   const handleNoteClick = (note) => {
     if (isSelectionMode) {
       if (selectedNotes.includes(note.NID)) {
@@ -90,15 +105,20 @@ const NotePage = () => {
     }
   };
 
+  //ANCHOR - summaryAPI(NotePage)
   const handleConfirmSummary = async (selectedNote) => {
     try {
-      console.log(selectedNote,selectionLabel)
+      console.log(selectedNote, selectionLabel);
       const response = await axios.post(
         `${API_URL}/summarize`,
-        { NIDs: selectedNotes , promptType: selectionLabel },
+        { NIDs: selectedNotes, promptType: selectionLabel },
         { withCredentials: true }
       );
-      alert(response.data.message);
+      console.log(response.data);
+
+      const { SID } = response.data; // Extract SID from the response
+      setSummarySID(SID); // Store SID in state
+      setIsSummaryCompleted(true); // Set this to true when summary is generated
     } catch (error) {
       console.error("Error generating summary:", error);
       alert("Summary generation failed.");
@@ -107,8 +127,16 @@ const NotePage = () => {
     setIsSelectionMode(false); // Exit selection mode
     setSelectedNotes([]);      // Clear selected notes
     setSelectionLabel(null);   // Clear any label filtering used during selection
-    setIsModalOpen(false);     // Close the confirmation modal
-    fetchNotes();              // Fetch the notes again to refresh the UI
+    fetchNotes();              // Fetch all notes to reset to default list
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    if (isSummaryCompleted) {
+      fetchNotes(); // Fetch notes to refresh the list
+      setSummarySID(null); // Clear the summary SID
+      setIsSummaryCompleted(false); // Reset the summary completion status
+    }
   };
 
   const listVariants = {
@@ -133,6 +161,7 @@ const NotePage = () => {
     fetchNotes(); // Fetch all notes again when exiting selection mode
   };
 
+  //ANCHOR - PinAPI
   const handlePinClick = async (note) => {
     try {
       if (note.pin === 1) {
@@ -170,23 +199,23 @@ const NotePage = () => {
   return (
       <div>
         <div className="flex justify-between m-4">
-          {/* Filter and Label Dropdowns */}
+          {/* ANCHOR -Filter and Label Dropdowns */}
           <FilterLabelDropdowns
             filter={filter}
             setFilter={setFilter}
             label={label}
             setLabel={setLabel}
           />
-          <Modal/> 
+          <CreateNoteModal/> 
         </div>
         <hr />
 
-        {/* -----------Content----------- */}
+        {/* ANCHOR -Content */}
 
         <div className="p-8 z-0">
           <h1 className="text-3xl font-bold mb-6">My Notes</h1>
 
-          {/* Pinned Notes Section */}
+          {/*ANCHOR - Pinned Notes*/}
           {pinnedNotes.length > 0 && (
             <div>
               <h2 className="text-2xl font-semibold mb-4">Pinned Notes ({pinnedNotes.length})</h2>
@@ -218,11 +247,13 @@ const NotePage = () => {
             </div>
           )}
 
-          {/* Unpinned Notes Section */}
+          {/*ANCHOR - Unpinned Notes*/}
           <div>
             <h2 className="text-2xl font-semibold mb-4">All Notes ({notes.length})</h2>
+            {/* <InfiniteScroll> */}
             <motion.div layout className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
               <AnimatePresence>
+
                 {notes.map((note) => (
                   <motion.div 
                     key={note.NID} 
@@ -246,50 +277,58 @@ const NotePage = () => {
                 ))}
               </AnimatePresence>
             </motion.div>
+            {/* </InfiniteScroll> */}
+
           </div>
 
-          {/* NoteModal */}
+          {/*ANCHOR - Edit Note*/}
           {selectedNote && (
-            <NoteModal
+            <EditNoteModal
               isOpen={!!selectedNote}
               onClose={closeModal}
               title={selectedNote.title}
               content={selectedNote.content}
               NID={selectedNote.NID} 
+              status={selectedNote.status}
+              label={selectedNote.label}  // Add this line
               onSave={handleSave} // Call handleSave to refresh the notes
             />
           )}
         </div>
 
-        {/* Selection Button */}
+        {/*ANCHOR - Selection Summary*/}
         {isSelectionMode ? (
-        <div className="fixed z-10 bottom-4 right-4 flex space-x-4">
+        <div className="fixed z-10 bottom-4 right-4 flex space-x-2">
           <button
             onClick={handleSelectionToggle}
-            className="px-6 py-3 bg-red-500 hover:bg-red-700 transition duration-300 text-white rounded-full shadow-lg"
+            className="relative inline-flex items-center justify-start px-6 py-3 overflow-hidden font-medium transition-all bg-white rounded hover:bg-white group border-2 border-black drop-shadow-md"
           >
-            Exit Selection Mode
+            <span className="w-48 h-48 rounded rotate-[-40deg] bg-red-500 absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-9 ml-9 group-hover:ml-0 group-hover:mb-32 group-hover:translate-x-0"></span>
+            <span className="relative w-full text-left text-black transition-colors duration-300 ease-in-out group-hover:text-white">Exit Selection Mode</span>
           </button>
           <button
             onClick={handleSummaryClick}
-            className="px-6 py-3 bg-green-500 hover:bg-green-700 transition duration-300 text-white rounded-full shadow-lg"
+            className="relative inline-flex items-center justify-start px-6 py-3 overflow-hidden font-medium transition-all bg-white rounded hover:bg-white group border-2 border-black drop-shadow-md"
           >
-            Summary
+            <span className="w-48 h-48 rounded rotate-[-40deg] bg-purple-600 absolute bottom-0 right-0 translate-x-full ease-out duration-500 transition-all translate-y-full mb-9 mr-9 group-hover:mr-0 group-hover:mb-32 group-hover:translate-x-0"></span>
+            <span className="relative w-full text-left text-black transition-colors duration-300 ease-in-out group-hover:text-white">Summary</span>
           </button>
         </div>
       ) : (
         <button
           onClick={handleSelectionToggle}
-          className="fixed bottom-4 right-4 px-6 py-3 bg-blue-500 hover:bg-blue-700 transition duration-300 text-white rounded-full shadow-lg"
+          className="fixed bottom-4 right-4 inline-flex items-center justify-start px-6 py-3 overflow-hidden font-medium transition-all bg-white rounded hover:bg-white group border-2 border-black drop-shadow-md"
         >
-          Select Notes for summary
+          <span className="w-64 h-48 rounded rotate-[-40deg] bg-purple-600 absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-9 ml-9 group-hover:ml-0 group-hover:mb-32 group-hover:translate-x-0"></span>
+          <span className="relative w-full text-left text-black transition-colors duration-300 ease-in-out group-hover:text-white">Select Notes for summary</span>
         </button>
       )}
       <ConfirmationModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleModalClose} // Use the new handler here
         onConfirm={handleConfirmSummary}
         selectedNotes={selectedNotes}
+        summarySID={summarySID} // Pass SID to the modal
       />
       </div>
   );

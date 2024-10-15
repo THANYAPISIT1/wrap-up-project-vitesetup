@@ -1,18 +1,14 @@
 import NotesList from "../Note/NotesList";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import axios from 'axios';
 import { motion, AnimatePresence } from "framer-motion";
 import FilterLabelDropdowns from "../../components/FilterLabelDropdowns";
 
-const stripHTML = (html) => {
-    let doc = new DOMParser().parseFromString(html, 'text/html');
-    return doc.body.textContent || "";
-};
-
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Summary = () => {
+    const { searchQuery } = useOutletContext();
     const [summaries, setSummaries] = useState([]);
     const [label, setLabel] = useState("");
 
@@ -33,19 +29,29 @@ const Summary = () => {
                             summary.label && summary.label.toLowerCase() === label.toLowerCase()
                     );
                 }
-                const sortedSummaries = fetchedSummaries.sort((a, b) => b.SID - a.SID);
 
-                // Log SIDs from last to first
-                sortedSummaries.forEach(summary => console.log(summary.SID));
+                // Apply search filtering
+                if (searchQuery) {
+                    fetchedSummaries = fetchedSummaries.filter(
+                        (summary) =>
+                            summary.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            (summary.label && summary.label.toLowerCase().includes(searchQuery.toLowerCase()))
+                    );
+                }
+
+                // Always sort by date_create
+                const sortedSummaries = fetchedSummaries.sort((a, b) => {
+                    return new Date(b.date_create) - new Date(a.date_create);
+                });
 
                 setSummaries(sortedSummaries);
             } catch (error) {
                 console.error("Error fetching Summary notes:", error.message);
             }
         };
-        
+
         fetchSummaryNotes();
-    }, [label]);
+    }, [label, searchQuery]); // Only listen to label and searchQuery changes
 
     const listVariants = {
         hidden: { opacity: 0, y: 20 },  // Start hidden and slightly below
@@ -58,8 +64,6 @@ const Summary = () => {
             <div className="flex justify-between">
                 <h1 className="text-3xl font-bold mb-6">Summary Notes ({summaries.length})</h1>
                 <FilterLabelDropdowns
-                    filter={null} // No sorting needed
-                    setFilter={null} // No sorting needed
                     label={label}
                     setLabel={setLabel}
                 />
@@ -77,12 +81,6 @@ const Summary = () => {
                         >
                             <Link
                                 to={`/summary/${summary.SID}`} 
-                                state={{ 
-                                    SID: summary.SID, 
-                                    content: summary.content, 
-                                    label: summary.label, 
-                                    dateUpdate: summary.date_create 
-                                }} 
                                 key={summary.SID}
                             >
                                 <NotesList

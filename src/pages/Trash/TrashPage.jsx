@@ -3,29 +3,72 @@ import RestoreNoteModal from "../../components/Modal/RestoreNoteModal";
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import { motion, AnimatePresence } from "framer-motion";
+import { useOutletContext } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Trash = () => {
+    const { searchQuery } = useOutletContext();
     const [trashNotes, setTrashNotes] = useState([]);
+    const [noteCountdowns, setNoteCountdowns] = useState({});
     const [selectedNote, setSelectedNote] = useState(null); 
     const [isModalOpen, setIsModalOpen] = useState(false); 
 
-    // Fetch deleted notes from the /trash API when the component mounts
+    // Fetch deleted notes from the /trash API
     useEffect(() => {
         const fetchTrashNotes = async () => {
             try {
                 const response = await axios.get(`${API_URL}/trash`, {
-                    withCredentials: true, // Include cookies in the request
+                    withCredentials: true,
                 });
 
-                setTrashNotes(response.data.note);
+                let fetchedNotes = response.data.note;
+
+                // Apply search filtering
+                if (searchQuery) {
+                    fetchedNotes = fetchedNotes.filter(
+                        (note) =>
+                            note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            note.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            (note.label && note.label.toLowerCase().includes(searchQuery.toLowerCase()))
+                    );
+                }
+
+                setTrashNotes(fetchedNotes);
             } catch (error) {
                 console.error("Error fetching deleted notes:", error.message);
             }
         };
 
         fetchTrashNotes();
+    }, [searchQuery]);
+
+    // Fetch note countdowns
+    useEffect(() => {
+        const fetchNoteCountdowns = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/note/countdown`, {
+                    withCredentials: true,
+                });
+
+                const countdownData = response.data.countdown;
+                if (Array.isArray(countdownData)) {
+                    const countdownMap = {};
+                    countdownData.forEach(item => {
+                        if (item.NID && item.daysLeft !== undefined) {
+                            countdownMap[item.NID] = item.daysLeft;
+                        }
+                    });
+                    setNoteCountdowns(countdownMap);
+                } else {
+                    console.error("Unexpected countdown data format:", countdownData);
+                }
+            } catch (error) {
+                console.error("Error fetching note countdowns:", error.message);
+            }
+        };
+
+        fetchNoteCountdowns();
     }, []);
 
     const handleNoteClick = (trashNotes) => {
@@ -79,6 +122,7 @@ const Trash = () => {
                                 content={note.content}
                                 dateUpdate={note.date_update} 
                                 label={note.label}
+                                daysLeft={noteCountdowns[note.NID]} // Only pass daysLeft
                                 onClick={() => handleNoteClick(note)} 
                             />
                         </motion.div>

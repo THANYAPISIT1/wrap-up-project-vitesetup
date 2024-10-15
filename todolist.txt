@@ -1,0 +1,14 @@
+- regis condition
+- alert then click select notes button
+- then summary navigate to summary detail
+- add z-index in crate notes modal //complete
+- warning summary in select notes
+- tutorial
+- warning label label have affect for summary
+- warning in summary detail (top summary and suggestion)
+- change icon loading in waiting summary
+- deleted icon text editor
+- filter archive page 
+- change summary button for outstanding
+- redesign summary's response //doing
+- change date in notes page -> date_update //complete

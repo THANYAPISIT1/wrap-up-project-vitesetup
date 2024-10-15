@@ -4,10 +4,12 @@ import NoteModal from "../../components/Modal/EditNoteModal"; // Import the Edit
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import { motion, AnimatePresence } from "framer-motion"; // Import AnimatePresence
+import { useOutletContext } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Archive = () => {
+    const { searchQuery } = useOutletContext();
     const [notes, setNotes] = useState([]);
     const [selectedNote, setSelectedNote] = useState(null); 
     const [isModalOpen, setIsModalOpen] = useState(false); 
@@ -19,7 +21,17 @@ const Archive = () => {
                 withCredentials: true, 
             });
 
-            const activeNotes = response.data.note.filter(note => note.status !== 'deleted');
+            let activeNotes = response.data.note.filter(note => note.status !== 'deleted');
+
+            // Apply search filtering
+            if (searchQuery) {
+                activeNotes = activeNotes.filter(
+                    (note) =>
+                        note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        note.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        (note.label && note.label.toLowerCase().includes(searchQuery.toLowerCase()))
+                );
+            }
 
             const sortedNotes = activeNotes.sort(
                 (a, b) => new Date(b.date_update) - new Date(a.date_update)
@@ -33,7 +45,7 @@ const Archive = () => {
 
     useEffect(() => {
         fetchNotes();
-    }, []); 
+    }, [searchQuery]); // Add searchQuery to dependencies
 
     const handleNoteClick = (note) => {
         setSelectedNote(note);
