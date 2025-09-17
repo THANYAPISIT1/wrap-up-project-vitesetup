@@ -6,7 +6,7 @@ import Trash from './pages/Trash/TrashPage'
 import Summary from './pages/Summary/SummaryPage'
 import SummaryDetail from './pages/Summary/SummaryDetail'
 import MainRoutes from './pages/MainRoutes'
-import ProtectedRoute from './Auth/ProtectedRoute'
+// import ProtectedRoute from './Auth/ProtectedRoute'
 import NotFoundPage from './pages/NotFoundPage'
 import LoginRegis from './pages/LoginRegister/LoginRegis'
 
@@ -24,12 +24,12 @@ function App() {
         <Route path='/' element={<MainRoutes/>}>
 
           <Route path='/' element={<Navigate to="/note" replace />}/>
-          <Route path="/note" element={<ProtectedRoute><NotePage /></ProtectedRoute>} />
-          <Route path='/archive' element={<ProtectedRoute><Archive /></ProtectedRoute>} />
-          <Route path='/summary' element={<ProtectedRoute><Summary /></ProtectedRoute>} />
-          <Route path='/summary/:SID' element={<ProtectedRoute><SummaryDetail /></ProtectedRoute>} />
-          <Route path='/trash' element={<ProtectedRoute><Trash /></ProtectedRoute>} />
-          
+          <Route path="/note" element={<NotePage />} />
+          <Route path='/archive' element={<Archive />} />
+          <Route path='/summary' element={<Summary />} />
+          <Route path='/summary/:SID' element={<SummaryDetail />} />
+          <Route path='/trash' element={<Trash />} />
+
         </Route>
         <Route path="*" element={<Navigate to="/404" replace />} />
         <Route path="/404" element={<NotFoundPage/>}/>
